@@ -17,5 +17,8 @@ export interface MapOptions {
         latlng: Pick<LatLng, 'lat' | 'lng'>,
         zoom: number
     },
-    markers?: LatLng[]
+    markers?: LatLng[],
+    isSingleMarker?: Boolean
 }
+
+export type AddressFormat = 'xml'|'json'|'jsonv2'|'geojson'|'geocodejson';

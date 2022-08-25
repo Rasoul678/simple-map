@@ -1,9 +1,13 @@
+require('./marker');
 import { MapOptions, MapElement, LatLng } from "../types";
+import { getAddressByLatLng } from './utils'
 
 class MtrMap {
     private _element: MapElement;
     private _map: any;
     private _markers: LatLng[] = [];
+    private _markerObj: any[] = [];
+    private _options: MapOptions;
 
     constructor(options: MapOptions){
         if(!window.L){
@@ -11,15 +15,20 @@ class MtrMap {
         };
 
         this._element = options.element;
-        this.init(options);
-
+        this._options = options;
+        this.init();
     };
 
-    private init(options: MapOptions){
+    private init(){
         //! initialize Leaflet
-        const {lng: lon, lat} = options.presets.latlng;
-        const map = window.L.map(this.element).setView({lon, lat}, options.presets.zoom);
+        const {lng: lon, lat} = this._options.presets.latlng;
+        const map = window.L.map(this.element).setView({lon, lat}, this._options.presets.zoom);
         this._map = map;
+
+        map.on('click', (e: any) => {
+            console.log(e)
+            this.addMarker(e.latlng);
+        })
 
         //! Add the OpenStreetMap tiles
         window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -29,11 +38,25 @@ class MtrMap {
 
         //! Show the scale bar on the lower left corner
         window.L.control.scale({imperial: true, metric: true}).addTo(map);
+        map.addControl(window.L.Control.geocoder());
 
         //! Show markers on the map
-        this._markers = options?.markers || [];
+        this._markers = this._options?.markers || [];
         this.renderMarkers();
-    }
+    };
+
+    private renderMarkers(){
+        const markers = this._options.isSingleMarker ? [this.markers[0]] : this.markers;
+        markers.forEach((marker) => {
+            let m = window.L.customMarker({lon: marker.lng, lat: marker.lat}, {draggable: true});
+            this._markerObj.push(m);
+            if(marker.popUp){
+                m.bindPopup(marker.popUp);
+            };
+
+            m.addTo(this.map);
+        });
+    };
 
     get element(){
         return this._element
@@ -48,21 +71,19 @@ class MtrMap {
     };
 
     addMarker(marker: LatLng){
-        this._markers = [...this._markers, marker];
+        if(this._options.isSingleMarker){
+            this._markerObj.forEach(marker => {
+                this.map.removeLayer(marker);
+            })
+        };
+
+        this._markers = [marker, ...this._markers];
         this.renderMarkers();
     };
-
-    private renderMarkers(){
-        this.markers.forEach(marker => {
-            let m = window.L.marker({lon: marker.lng, lat: marker.lat}, {draggable: true});
-
-            if(marker.popUp){
-                m.bindPopup(marker.popUp);
-            };
-
-            m.addTo(this.map);
-        });
-    }
 }
 
 export default MtrMap;
+
+
+getAddressByLatLng({latlng: {lat: 36.68655642027285, lng: 53.543612601721804}, format: "json", language: "fa"})
+.then((data: any) => console.log(data.address))
