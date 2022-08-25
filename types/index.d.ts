@@ -20,5 +20,3 @@ export interface MapOptions {
     markers?: LatLng[],
     isSingleMarker?: Boolean
 }
-
-export type AddressFormat = 'xml'|'json'|'jsonv2'|'geojson'|'geocodejson';

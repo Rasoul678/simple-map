@@ -1,6 +1,6 @@
 require('./marker');
 import { MapOptions, MapElement, LatLng } from "../types";
-import { getAddressByLatLng } from './utils'
+import { getAddressByLatLng, getLatLngByAddress } from './utils'
 
 class MtrMap {
     private _element: MapElement;
@@ -31,7 +31,7 @@ class MtrMap {
         })
 
         //! Add the OpenStreetMap tiles
-        window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?lang=en', {
           maxZoom: 19,
           attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
         }).addTo(map);
@@ -72,18 +72,18 @@ class MtrMap {
 
     addMarker(marker: LatLng){
         if(this._options.isSingleMarker){
-            this._markerObj.forEach(marker => {
-                this.map.removeLayer(marker);
+            this._markerObj.forEach(m => {
+                this.map.removeLayer(m);
             })
         };
 
         this._markers = [marker, ...this._markers];
         this.renderMarkers();
+        getAddressByLatLng({latlng: marker, language: "fa"})
+        .then((data: any) => console.log(data.address))
     };
 }
 
 export default MtrMap;
 
-
-getAddressByLatLng({latlng: {lat: 36.68655642027285, lng: 53.543612601721804}, format: "json", language: "fa"})
-.then((data: any) => console.log(data.address))
+getLatLngByAddress('تهران میدان ونک').then(res => console.log(res))

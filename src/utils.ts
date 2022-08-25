@@ -1,8 +1,11 @@
-import { AddressFormat, LatLng } from "../types";
+import { LatLng } from "../types";
 
 interface IGetAddress {
     latlng: Pick<LatLng, 'lat'|'lng'>,
-    format: AddressFormat,
+    language: string
+};
+
+interface IGetAddress {
     language: string
 };
 
@@ -12,8 +15,40 @@ interface IGetAddress {
  * @returns Promise
  */
 export const getAddressByLatLng = (params: IGetAddress) => {
-    const {latlng, format, language} = params;
-    const url = `https://nominatim.openstreetmap.org/reverse?lat=${latlng.lat}&lon=${latlng.lng}&format=${format}&accept-language=${language}`;
+    const {latlng: {lat, lng}, language} = params;
+    const url = new URL("https://nominatim.openstreetmap.org/reverse");
+    url.search = new URLSearchParams({
+        lat: `${lat}`,
+        lon: `${lng}`,
+        format: "json",
+        ["accept-language"]: language
+    }).toString();
+    
+    return new Promise(async (resolve, reject) => {
+        try {
+            const data = await fetch(url);
+            const result = await data.json();
+            resolve(result);
+        } catch (error) {
+            reject(error);
+        }
+    });
+};
+
+/**
+ * Query location longitude and latitude by address.
+ * @param {string} query 
+ * @returns Promise
+ */
+ export const getLatLngByAddress = (query: string) => {
+    const url = new URL("https://nominatim.openstreetmap.org/search");
+    url.search = new URLSearchParams({
+        q: query,
+        format: "json",
+        ["polygon_geojson"]: "1",
+        addressdetails: "1",
+        ["accept-language"]: "fa"
+    }).toString();
     
     return new Promise(async (resolve, reject) => {
         try {
