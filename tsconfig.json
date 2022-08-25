@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+      "outDir": "./dist/",
+      "noImplicitAny": true,
+      "module": "es6",
+      "moduleResolution": "node",
+      "sourceMap": true,
+      "allowJs": true,
+      "target": "es5",
+      "typeRoots": [
+        "node_modules/@types"
+      ],
+      "lib": [
+        "es2017",
+        "dom"
+      ],
+      "paths": {
+        "leaflet": ["./node_modules/leaflet/dist/*"]
+      }
+    }
+  }
