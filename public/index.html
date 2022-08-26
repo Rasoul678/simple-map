@@ -9,26 +9,15 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <title>MtrMap</title>
-
-    <style>
-      html, body {
-        height: 100%;
-        padding: 0;
-        margin: 0;
-      }
-
-      #map {
-        /* configure the size of the map */
-        width: 50%;
-        height: 50%;
-        margin: auto;
-        border-radius: 1rem;
-      }
-    </style>
 </head>
 <body>
     <h1>Mootanroo Map</h1>
-    <div id="map"></div>
+    <div class="containerMap">
+      <div id="map"></div>
+      <div class="address">
+        Address
+      </div>
+    </div>
     <button data-js="add">Add marker</button>
     <buton data-js="search-btn">search</buton>
     <input data-js="search" type="text" aria-label="search address" />

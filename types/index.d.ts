@@ -17,6 +17,5 @@ export interface MapOptions {
         latlng: Pick<LatLng, 'lat' | 'lng'>,
         zoom: number
     },
-    markers?: LatLng[],
-    isSingleMarker?: Boolean
+    marker?: LatLng,
 }
