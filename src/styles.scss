@@ -11,19 +11,32 @@ body {
   height: 100%;
   margin: auto;
   border-radius: 1rem;
+  box-shadow: 0px 0px 10px 1px #333;
 }
 
-.containerMap {
+.MtrMap--container {
   width: 100vw;
-  height: 60%;
+  height: 80%;
   position: relative;
+  display: flex;
+  justify-content: center;
 
-  .address {
-    height: 5rem;
-    position: absolute;
-    bottom: 0rem;
-    z-index: 10000;
-    width: 100%;
+  .MtrMap--address {
+    height: 3rem;
+    font-size: 1.1rem;
+    width: calc(100% - 2rem);
     background-color: #fff;
+    border-bottom-right-radius: 1rem;
+    border-bottom-left-radius: 1rem;
+    padding: 1rem;
+    margin: 0;
+    box-shadow: 5px 10px 15px 5px #333;
+    transform: translate3d(0,6rem,0);
+    transition: transform 0.3s linear;
+}
+
+.leaflet-bottom.leaflet-left{
+    width: 100%;
+    z-index: 1100;
   }
 }

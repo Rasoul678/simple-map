@@ -1,5 +1,4 @@
-import MtrMap from './mtrMap';
-import {getLatLngByAddress} from './utils';
+import MtrMap, { getLatLngByAddress } from './mtrMap';
 import './styles.scss';
 
 const element1 = document.querySelector('#map') as HTMLElement;
@@ -9,12 +8,12 @@ const mtrMap = new MtrMap({
     element: element1,
     presets: {
         latlng: {
-            lat: 35.68,
-            lng: 51.38
+            lat: 35.65,
+            lng: 51.4
         },
-        zoom: 12,
+        zoom: 10,
     },
-    marker: {lat: 35.68, lng: 51.38},
+    marker: {lat: 35.7, lng: 51.38},
 });
 
 button.addEventListener('click', () => {
@@ -38,3 +37,5 @@ searchButton?.addEventListener('click', () => {
         })
     })
 });
+
+console.log(mtrMap.address, 'address');
