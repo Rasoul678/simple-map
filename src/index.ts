@@ -11,14 +11,14 @@ const mtrMap = new MtrMap({
             lat: 35.65,
             lng: 51.4
         },
-        zoom: 10,
+        zoom: 13,
     },
     marker: {lat: 35.7, lng: 51.38},
 });
 
 button.addEventListener('click', () => {
-    mtrMap.addMarker({lat: 20, lng: 12});
-    console.log(mtrMap.marker, 'marker');
+    mtrMap.addMarker({lat: 29.60739350145135, lng: 52.530415968397186});
+    console.log(mtrMap.marker, 'Shiraz');
 
 });
 
@@ -37,5 +37,3 @@ searchButton?.addEventListener('click', () => {
         })
     })
 });
-
-console.log(mtrMap.address, 'address');
