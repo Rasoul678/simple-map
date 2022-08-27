@@ -2,7 +2,13 @@ import MtrMap, { getLatLngByAddress } from './mtrMap';
 import './styles.scss';
 
 const element1 = document.querySelector('#map') as HTMLElement;
-const button = document.querySelector('[data-js="add"]') as HTMLElement;
+const button = document.querySelector('[data-js="add"]') as HTMLElement; 
+const stateInput = document.querySelector('[data-js="provinceOrState"]') as HTMLInputElement; 
+const countyInput = document.querySelector('[data-js="county"]') as HTMLInputElement; 
+const cityInput = document.querySelector('[data-js="cityOrTown"]') as HTMLInputElement; 
+const suburbInput = document.querySelector('[data-js="suburb"]') as HTMLInputElement; 
+const neighbourhoodInput = document.querySelector('[data-js="neighbourhood"]') as HTMLInputElement; 
+const roadInput = document.querySelector('[data-js="road"]') as HTMLInputElement; 
 
 const mtrMap = new MtrMap({
     element: element1,
@@ -14,7 +20,22 @@ const mtrMap = new MtrMap({
         zoom: 13,
     },
     marker: {lat: 35.7, lng: 51.38},
+    events: {
+        onGetAddress: showAddress
+    }
 });
+
+
+function showAddress(res: any){
+    // console.log(res, 'res');
+    const {address} = res || {};
+    stateInput.value = address?.state || address?.province || '';
+    countyInput.value = address?.county || '';
+    cityInput.value = address?.city || address?.town || '';
+    suburbInput.value = address?.suburb || '';
+    neighbourhoodInput.value = address?.neighbourhood || '';
+    roadInput.value = address?.road || '';
+};
 
 button.addEventListener('click', () => {
     mtrMap.addMarker({lat: 29.60739350145135, lng: 52.530415968397186});

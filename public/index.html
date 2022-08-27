@@ -1,26 +1,97 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
     <script src="https://npmcdn.com/leaflet-geometryutil"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <title>MtrMap</title>
-</head>
-<body>
-    <h1>Mootanroo Map</h1>
-    <div class="MtrMap--container">
-      <div id="map"></div>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    />
+    <!-- Latest compiled and minified CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <title>Mootanroo | Map</title>
+  </head>
+  <body>
+    <div style="display: flex; margin: 1rem; gap: 2rem">
+      <div style="width: 50%">
+        <h2>آدرس:</h2>
+        <div class="row">
+          <div class="col-lg-6 my-2">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="استان"
+              aria-describedby="استان"
+              data-js="provinceOrState"
+            />
+          </div>
+          <div class="col-lg-6 my-2">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="شهرستان"
+              aria-describedby="شهرستان"
+              data-js="county"
+            />
+          </div>
+          <div class="col-lg-6 my-2">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="شهر"
+              aria-describedby="شهر"
+              data-js="cityOrTown"
+            />
+          </div>
+          <div class="col-lg-6 my-2">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="منطقه"
+              aria-describedby="منطقه"
+              data-js="suburb"
+            />
+          </div>
+          <div class="col-lg-6 my-2">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="محله"
+              aria-describedby="محله"
+              data-js="neighbourhood"
+            />
+          </div>
+          <div class="col-lg-6 my-2">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="خیابان"
+              aria-describedby="خیابان"
+              data-js="road"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="MtrMap--container">
+        <div id="map"></div>
+      </div>
     </div>
     <button data-js="add">Jump to Shiraz</button>
     <buton data-js="search-btn">search</buton>
     <input data-js="search" type="text" aria-label="search address" />
-    <ul data-js="data-list">
-    </ul>
-
-</body>
+    <ul data-js="data-list"></ul>
+  </body>
 </html>

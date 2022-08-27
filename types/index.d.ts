@@ -1,7 +1,6 @@
 declare global {
     interface Window {
       L: any;
-      addMarker: (marker: any) => void
     }
 }
 
@@ -12,6 +11,25 @@ export type LatLng = {
     popUp?: string
 }
 
+type AddressResponse = {
+    status: number | string,
+    address: {[key: string]: string} | null,
+    error?: string | null
+}
+
+type InputField = HTMLInputElement | string;
+
+declare enum InputsEnum {
+    provinceOrState = 'provinceOrState',
+    county = 'county',
+    cityOrTown = 'cityOrTown',
+    suburb = 'suburb',
+}
+
+type Inputs = {
+    [key in InputsEnum]?: InputField
+}
+
 export interface MapOptions {
     element: MapElement,
     presets?: {
@@ -19,4 +37,8 @@ export interface MapOptions {
         zoom: number
     },
     marker?: LatLng,
+    events?: {
+        onGetAddress?: (address: AddressResponse) => void
+    },
+    inputs?: Inputs
 }

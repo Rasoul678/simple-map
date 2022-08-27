@@ -134,15 +134,19 @@ class MtrMap {
         //! Get new address based on new marker
         getAddressByLatLng({latlng: marker, language: "fa"})
         .then((data: any) => {
+            this._options.events.onGetAddress({status: 200, address: data.address});
             const filterAddress = (item: any) => !['country_code', "country", "postcode", "ISO3166-2-lvl4"].includes(item[0]);
             const addressList = Object.entries(data.address).filter(filterAddress).map(item => item[1]).reverse();
             const addressString = addressList.join(' - ')
             this.setAddress(addressString);
         })
+        .catch(error => {
+            this._options.events.onGetAddress({status: 404, address: null, error: error.message});
+        });
     };
 
     private setAddress(address: string){
-        console.log(address)
+        // console.log(address)
         this._address = address;
         const addressBox = document.querySelector('.MtrMap--address.leaflet-control') as HTMLElement;
         addressBox.innerText = address;
@@ -186,11 +190,19 @@ L.Control.AddressBox = L.Control.extend({
     onAdd: function(map: any) {
         const addressDiv = L.DomUtil.create('div');
         addressDiv.classList.add('MtrMap--address');
+        addressDiv.setAttribute('id', 'address');
+        L.DomEvent.on(addressDiv, 'click', this._onClick, this);
         return addressDiv;
     },
 
     onRemove: function(map: any) {
-        //! Nothing to do here
+        const addressDiv = L.DomUtil.get('address');
+        L.DomEvent.off(addressDiv, 'click', this._onClick, this);
+
+    },
+
+    _onClick: function(e: any){
+        e.stopPropagation();
     }
 });
 
