@@ -24,6 +24,8 @@ declare enum InputsEnum {
     county = 'county',
     cityOrTown = 'cityOrTown',
     suburb = 'suburb',
+    neighbourhood = 'neighbourhood',
+    road = 'road',
 }
 
 type Inputs = {

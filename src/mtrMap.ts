@@ -9,7 +9,7 @@ class MtrMap {
     private _marker: LatLng | null;
     private _markerObj: any;
     private _options: MapOptions;
-    private _address: string | null;
+    private _addressString: string | null;
     private _circle: any;
 
     constructor(options: MapOptions){
@@ -108,11 +108,13 @@ class MtrMap {
         return this._marker;
     };
 
-    get address(){
-        return this._address;
+    get addressString(){
+        return this._addressString;
     }
 
     addMarker(marker: LatLng){
+        if(!marker) return;
+
         let distance = L.GeometryUtil.distance(this.map, marker, this.marker);
         let flyDuration = Math.min(Math.max(0.5, +(distance / 2500).toFixed(1)), 3);
 
@@ -135,22 +137,41 @@ class MtrMap {
         getAddressByLatLng({latlng: marker, language: "fa"})
         .then((data: any) => {
             this._options.events.onGetAddress({status: 200, address: data.address});
-            const filterAddress = (item: any) => !['country_code', "country", "postcode", "ISO3166-2-lvl4"].includes(item[0]);
-            const addressList = Object.entries(data.address).filter(filterAddress).map(item => item[1]).reverse();
-            const addressString = addressList.join(' - ')
-            this.setAddress(addressString);
+            this.setAddress(data.address);
+
+            if(this._options.inputs){
+                this.setInputs(data.address);
+            }
         })
         .catch(error => {
             this._options.events.onGetAddress({status: 404, address: null, error: error.message});
         });
     };
 
-    private setAddress(address: string){
-        // console.log(address)
-        this._address = address;
+    private setAddress(address: any){
+        const filterAddress = (item: any) => !['country_code', "country", "postcode", "ISO3166-2-lvl4"].includes(item[0]);
+        const addressList = Object.entries(address).filter(filterAddress).map(item => item[1]).reverse();
+        const addressString = addressList.join(' - ');
+        
         const addressBox = document.querySelector('.MtrMap--address.leaflet-control') as HTMLElement;
-        addressBox.innerText = address;
+        addressBox.innerText = addressString;
+        this._addressString = addressString;
     };
+
+    private setInputs(address: any){
+        const {provinceOrState, county, suburb, cityOrTown, neighbourhood, road} = this._options.inputs;
+        
+        //! Fill the city
+        if((address.city || address.town) && cityOrTown instanceof HTMLInputElement){
+            cityOrTown.value = address.city || address.town || '';
+        }else if ((address.city || address.town) && typeof cityOrTown === 'string'){
+            const cityInput = L.DomUtil.get(cityOrTown);
+
+            if(!cityInput) console.error(`Input element with id: "${cityOrTown}" has not found.`);
+
+            cityInput.value = address.city || address.town || '';
+        }
+    }
 }
 
 export default MtrMap;

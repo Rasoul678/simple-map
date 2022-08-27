@@ -22,19 +22,28 @@ const mtrMap = new MtrMap({
     marker: {lat: 35.7, lng: 51.38},
     events: {
         onGetAddress: showAddress
+    },
+    inputs: {
+        provinceOrState: stateInput,
+        county: countyInput,
+        cityOrTown: cityInput,
+        suburb: suburbInput,
+        neighbourhood: neighbourhoodInput,
+        road: roadInput,
     }
 });
 
 
 function showAddress(res: any){
+    //! First method to fill inputs
     // console.log(res, 'res');
-    const {address} = res || {};
-    stateInput.value = address?.state || address?.province || '';
-    countyInput.value = address?.county || '';
-    cityInput.value = address?.city || address?.town || '';
-    suburbInput.value = address?.suburb || '';
-    neighbourhoodInput.value = address?.neighbourhood || '';
-    roadInput.value = address?.road || '';
+    // const {address} = res || {};
+    // stateInput.value = address?.state || address?.province || '';
+    // countyInput.value = address?.county || '';
+    // cityInput.value = address?.city || address?.town || '';
+    // suburbInput.value = address?.suburb || '';
+    // neighbourhoodInput.value = address?.neighbourhood || '';
+    // roadInput.value = address?.road || '';
 };
 
 button.addEventListener('click', () => {
