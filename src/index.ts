@@ -47,7 +47,7 @@ function showAddress(res: any){
 };
 
 button.addEventListener('click', () => {
-    mtrMap.addMarker({lat: 29.60739350145135, lng: 52.530415968397186});
+    mtrMap.addMarker({lat: 29.60739350145135, lng: 52.532415968397186});
     console.log(mtrMap.marker, 'Shiraz');
 
 });
@@ -59,10 +59,16 @@ const dataList = document.querySelector('[data-js="data-list"]');
 searchButton?.addEventListener('click', () => {
     getLatLngByAddress((input as HTMLInputElement).value).then((res: any[]) => {
         console.log(res);
+        dataList.innerHTML = '';
+
+        if(res.length){
+            mtrMap.addMarker({lat: res[0].lat , lng: res[0].lon});
+        }
+
         res.forEach(item => {
             const {state, county, city, road} = item.address;
             let optionTag = document.createElement('li');
-            optionTag.innerText = `${state}-${county}-${city}-${road}`;
+            optionTag.innerText = `${state || ''}-${county || ''}-${city || ''}-${road || ''}`;
             dataList.appendChild(optionTag);
         })
     })

@@ -159,17 +159,51 @@ class MtrMap {
     };
 
     private setInputs(address: any){
-        const {provinceOrState, county, suburb, cityOrTown, neighbourhood, road} = this._options.inputs;
+        const {
+            provinceOrState,
+            county,
+            suburb,
+            cityOrTown,
+            neighbourhood,
+            road
+        } = this._options.inputs;
+
+        //! Clear inputs value
+        Object.values(this._options.inputs).forEach((input: HTMLInputElement) => {
+            input.value = '';
+        });
         
-        //! Fill the city
-        if((address.city || address.town) && cityOrTown instanceof HTMLInputElement){
-            cityOrTown.value = address.city || address.town || '';
-        }else if ((address.city || address.town) && typeof cityOrTown === 'string'){
-            const cityInput = L.DomUtil.get(cityOrTown);
 
-            if(!cityInput) console.error(`Input element with id: "${cityOrTown}" has not found.`);
+        //! state
+        const stateValue = address.state || address.province;
+        this.fillInput(provinceOrState, stateValue);
 
-            cityInput.value = address.city || address.town || '';
+        //! county
+        this.fillInput(county, address.county);
+
+        //! city
+        const cityValue = address.city || address.town;
+        this.fillInput(cityOrTown, cityValue);
+
+        //! suburb
+        this.fillInput(suburb, address.suburb);
+
+        //! neighbourhood
+        this.fillInput(neighbourhood, address.neighbourhood);
+
+        //! road
+        this.fillInput(road, address.road);
+    }
+
+    private fillInput( input: string | HTMLInputElement, value: string){
+        if(value && input instanceof HTMLInputElement){
+            input.value = value || '';
+        }else if (value && typeof input === 'string'){
+            const inputElement = L.DomUtil.get(input);
+
+            if(!inputElement) console.error(`Input element with id: "${input}" has not found.`);
+
+            inputElement.value = value || '';
         }
     }
 }
@@ -224,7 +258,7 @@ L.Control.AddressBox = L.Control.extend({
 
     _onClick: function(e: any){
         e.stopPropagation();
-    }
+    },
 });
 
 L.Control.addressBox = function(opts?: any) {

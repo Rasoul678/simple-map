@@ -36,6 +36,7 @@
               placeholder="استان"
               aria-describedby="استان"
               data-js="provinceOrState"
+              id="stateInput"
             />
           </div>
           <div class="col-lg-6 my-2">
@@ -45,6 +46,7 @@
               placeholder="شهرستان"
               aria-describedby="شهرستان"
               data-js="county"
+              id="countyInput"
             />
           </div>
           <div class="col-lg-6 my-2">
@@ -64,6 +66,7 @@
               placeholder="منطقه"
               aria-describedby="منطقه"
               data-js="suburb"
+              id="suburbInput"
             />
           </div>
           <div class="col-lg-6 my-2">
@@ -73,6 +76,7 @@
               placeholder="محله"
               aria-describedby="محله"
               data-js="neighbourhood"
+              id="neighbourhoodInput"
             />
           </div>
           <div class="col-lg-6 my-2">
@@ -82,17 +86,20 @@
               placeholder="خیابان"
               aria-describedby="خیابان"
               data-js="road"
+              id="roadInput"
             />
           </div>
+          <div class="d-flex d-row">
+            <button data-js="search-btn" class="btn btn-info">search</button>
+            <input data-js="search" type="text" aria-label="search address" style="margin-left: auto;"/>
+            <button data-js="add" class="btn btn-success">Jump to Shiraz</button>
+          </div>
+          <ul data-js="data-list"></ul>
         </div>
       </div>
       <div class="MtrMap--container">
         <div id="map"></div>
       </div>
     </div>
-    <button data-js="add">Jump to Shiraz</button>
-    <buton data-js="search-btn">search</buton>
-    <input data-js="search" type="text" aria-label="search address" />
-    <ul data-js="data-list"></ul>
   </body>
 </html>
