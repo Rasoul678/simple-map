@@ -37,7 +37,7 @@ class MtrMap {
 
     //! Add the OpenStreetMap tiles
     L.tileLayer(
-      "https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png?lang=en",
+      "https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png?lang=fa",
       {
         maxZoom: 19,
         attribution:
@@ -64,10 +64,15 @@ class MtrMap {
   }
 
   private renderMarker(flyDuration: number) {
+    var icon = L.leafIcon({
+      iconUrl: this._options.iconUrl || "https://cdn.parsimap.ir/icons/map-marker.png",
+    });
+
     let m = L.customMarker(
       { lon: this.marker.lng, lat: this.marker.lat },
-      { draggable: true }
+      { draggable: true, icon: icon }
     );
+
     let circle = L.circle([this.marker.lat, this.marker.lng], { radius: 10 });
     this._markerObj = m;
     this._circle = circle;
@@ -299,6 +304,7 @@ L.Control.addressBox = function (opts?: any) {
   return new L.Control.AddressBox(opts);
 };
 
+//! Custom handler
 L.TiltHandler = L.Handler.extend({
   addHooks: function (map: any) {
     let portrait = window.matchMedia("(orientation: portrait)");
@@ -316,5 +322,20 @@ L.TiltHandler = L.Handler.extend({
     console.log(this);
   },
 });
+
+//! Custom icon
+L.LeafIcon = L.Icon.extend({
+  options: {
+    iconAnchor: [15, 42],
+    // iconSize: [38, 95],
+    // shadowSize: [50, 64],
+    // shadowAnchor: [4, 62],
+    // popupAnchor: [-3, -76],
+  },
+});
+
+L.leafIcon = function (opts?: any) {
+  return new L.LeafIcon(opts);
+};
 
 getLatLngByAddress("تهران میدان ونک").then((res) => console.log(res));

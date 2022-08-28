@@ -43,6 +43,7 @@ const mtrMap = new MtrMap({
     neighbourhood: neighbourhoodInput,
     road: roadInput,
   },
+//   iconUrl: 'http://leafletjs.com/examples/custom-icons/leaf-green.png'
 });
 
 function showAddress(res: any) {

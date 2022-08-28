@@ -42,5 +42,6 @@ export interface MapOptions {
     events?: {
         onGetAddress?: (address: AddressResponse) => void
     },
-    inputs?: Inputs
+    inputs?: Inputs,
+    iconUrl?: string
 }
