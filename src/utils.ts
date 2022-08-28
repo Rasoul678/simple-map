@@ -5,10 +5,6 @@ interface IGetAddress {
     language: string
 };
 
-interface IGetAddress {
-    language: string
-};
-
 /**
  * Get reverse address by location longitude and latitude.
  * @param params
