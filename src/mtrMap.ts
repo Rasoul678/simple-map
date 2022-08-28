@@ -65,12 +65,12 @@ class MtrMap {
 
   private renderMarker(flyDuration: number) {
     var icon = L.leafIcon({
-      iconUrl: this._options.iconUrl || "https://cdn.parsimap.ir/icons/map-marker.png",
+      iconUrl: this._options.iconUrl,
     });
 
     let m = L.customMarker(
       { lon: this.marker.lng, lat: this.marker.lat },
-      { draggable: true, icon: icon }
+      { draggable: true, ...(this._options.iconUrl && { icon: icon }) }
     );
 
     let circle = L.circle([this.marker.lat, this.marker.lng], { radius: 10 });
@@ -197,34 +197,34 @@ class MtrMap {
     const { provinceOrState, county, suburb, cityOrTown, neighbourhood, road } =
       this._options.inputs;
 
-    //! Clear inputs value
-    Object.values(this._options.inputs).forEach((input: InputField) => {
-      const inputElement = this.mapToInputElement(input);
+    const {
+      state,
+      province,
+      city,
+      town,
+      county: countyValue,
+      suburb: suburbValue,
+      neighbourhood: neighbourValue,
+      road: roadValue
+    } = address;
 
-      if (inputElement) {
-        inputElement.value = "";
-      }
+    //! state value
+    const stateValue = state || province;
+    //! city value
+    const cityValue = city || town;
+
+    const allInputs = new Map([
+      [provinceOrState, stateValue],
+      [county, countyValue],
+      [cityOrTown, cityValue],
+      [suburb, suburbValue],
+      [neighbourhood, neighbourValue],
+      [road, roadValue],
+    ]);
+
+    allInputs.forEach((value, input) => {
+      this.fillInput(input, value);
     });
-
-    //! state
-    const stateValue = address.state || address.province;
-    this.fillInput(provinceOrState, stateValue);
-
-    //! county
-    this.fillInput(county, address.county);
-
-    //! city
-    const cityValue = address.city || address.town;
-    this.fillInput(cityOrTown, cityValue);
-
-    //! suburb
-    this.fillInput(suburb, address.suburb);
-
-    //! neighbourhood
-    this.fillInput(neighbourhood, address.neighbourhood);
-
-    //! road
-    this.fillInput(road, address.road);
   }
 
   private fillInput(input: InputField, value: string) {

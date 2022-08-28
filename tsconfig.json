@@ -13,9 +13,6 @@
       "lib": [
         "es2017",
         "dom"
-      ],
-      "paths": {
-        "leaflet": ["./node_modules/leaflet/dist/*"]
-      }
+      ]
     }
   }
