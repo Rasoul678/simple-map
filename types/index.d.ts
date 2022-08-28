@@ -1,6 +1,7 @@
 declare global {
     interface Window {
       L: any;
+      MtrMap: any;
     }
 }
 

@@ -205,7 +205,7 @@ class MtrMap {
       county: countyValue,
       suburb: suburbValue,
       neighbourhood: neighbourValue,
-      road: roadValue
+      road: roadValue,
     } = address;
 
     //! state value
@@ -247,9 +247,6 @@ class MtrMap {
     return input;
   }
 }
-
-export default MtrMap;
-export { getAddressByLatLng, getLatLngByAddress };
 
 //! Custome marker
 L.CustomMarker = L.Marker.extend({
@@ -339,3 +336,6 @@ L.leafIcon = function (opts?: any) {
 };
 
 getLatLngByAddress("تهران میدان ونک").then((res) => console.log(res));
+
+export default MtrMap;
+// export { getAddressByLatLng, getLatLngByAddress };

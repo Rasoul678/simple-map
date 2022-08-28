@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.parsimap.ir/third-party/leaflet/v1.7.1/leaflet.js"></script>
+
+    <script src="https://npmcdn.com/leaflet-geometryutil"></script>
+    <script src="https://cdn.parsimap.ir/third-party/leaflet/plugins/parsimap-tile/v1.0.0/parsimap-tile.js"></script>
+    <script src="./dist/mtrmap.4ee62120056ee8bea1cc.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    />
+    <link rel="stylesheet" href="./dist/mtrmap.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+
+    <title>Document</title>
+  </head>
+  <body>
+    <div style="display: flex; margin: 1rem; gap: 2rem">
+      <div style="width: 50%">
+        <h2>آدرس:</h2>
+        <div class="row">
+          <div class="col-lg-6 my-2">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="استان"
+              aria-describedby="استان"
+              data-js="provinceOrState"
+              id="stateInput"
+            />
+          </div>
+          <div class="col-lg-6 my-2">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="شهرستان"
+              aria-describedby="شهرستان"
+              data-js="county"
+              id="countyInput"
+            />
+          </div>
+          <div class="col-lg-6 my-2">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="شهر"
+              aria-describedby="شهر"
+              data-js="cityOrTown"
+              id="cityInput"
+            />
+          </div>
+          <div class="col-lg-6 my-2">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="منطقه"
+              aria-describedby="منطقه"
+              data-js="suburb"
+              id="suburbInput"
+            />
+          </div>
+          <div class="col-lg-6 my-2">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="محله"
+              aria-describedby="محله"
+              data-js="neighbourhood"
+              id="neighbourhoodInput"
+            />
+          </div>
+          <div class="col-lg-6 my-2">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="خیابان"
+              aria-describedby="خیابان"
+              data-js="road"
+              id="roadInput"
+            />
+          </div>
+          <div class="d-flex d-row">
+            <button data-js="search-btn" class="btn btn-info">search</button>
+            <input
+              data-js="search"
+              type="text"
+              aria-label="search address"
+              style="margin-left: auto"
+            />
+            <button data-js="add" class="btn btn-success">
+              Jump to Shiraz
+            </button>
+          </div>
+          <ul data-js="data-list"></ul>
+        </div>
+      </div>
+      <div class="MtrMap--container">
+        <div id="map"></div>
+      </div>
+    </div>
+    <script>
+      window.MtrMap({
+        element: document.querySelector("#map"),
+        presets: {
+          latlng: {
+            lat: 35.7,
+            lng: 51.4,
+          },
+          zoom: 13,
+        },
+        marker: { lat: 35.7, lng: 51.4 },
+        events: {
+          onGetAddress: () => {},
+        },
+        inputs: {
+          provinceOrState: "stateInput",
+          county: "countyInput",
+          cityOrTown: "cityInput",
+          suburb: "suburbInput",
+          neighbourhood: "neighbourhoodInput",
+          road: "roadInput",
+        },
+        iconUrl: "https://cdn.parsimap.ir/icons/map-marker.png",
+      });
+    </script>
+  </body>
+</html>
