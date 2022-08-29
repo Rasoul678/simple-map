@@ -15,7 +15,10 @@ module.exports = {
           {
             loader: "expose-loader",
             options: {
-              exposes: ["MtrUtils"],
+              exposes: {
+                globalName: "MtrUtils",
+                override: true,
+              },
             },
           },
           {
@@ -32,11 +35,6 @@ module.exports = {
   },
   resolve: {
     extensions: [".ts", ".js", ".tsx"],
-  },
-  output: {
-    filename: "[name].[contenthash].js",
-    path: path.resolve(__dirname, "dist"),
-    clean: true,
   },
   plugins: [
     new CleanWebpackPlugin(),
