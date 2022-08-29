@@ -12,26 +12,26 @@ export { getAddressByLatLng, getLatLngByAddress };
 
 const element1 = document.querySelector("#map") as HTMLElement;
 const button = document.querySelector('[data-js="add"]') as HTMLElement;
-const stateInput = document.querySelector(
-  '[data-js="provinceOrState"]'
+const provinceInput = document.querySelector(
+  '[data-js="province"]'
 ) as HTMLInputElement;
 const countyInput = document.querySelector(
   '[data-js="county"]'
 ) as HTMLInputElement;
 const cityInput = document.querySelector(
-  '[data-js="cityOrTown"]'
+  '[data-js="city"]'
 ) as HTMLInputElement;
 const suburbInput = document.querySelector(
   '[data-js="suburb"]'
 ) as HTMLInputElement;
-const neighbourhoodInput = document.querySelector(
-  '[data-js="neighbourhood"]'
+const urbunInput = document.querySelector(
+  '[data-js="urbun"]'
 ) as HTMLInputElement;
-const roadInput = document.querySelector(
-  '[data-js="road"]'
+const addressInput = document.querySelector(
+  '[data-js="address"]'
 ) as HTMLInputElement;
 
-const mtrMap = new window.MtrMap({
+const mtrMap = new MTRMap({
   element: element1,
   presets: {
     latlng: {
@@ -40,24 +40,28 @@ const mtrMap = new window.MtrMap({
     },
     zoom: 13,
   },
-  marker: { lat: 35.7, lng: 51.38 },
+  defaultMarker: { lat: 35.7, lng: 51.38 },
   events: {
     onGetAddress: showAddress,
   },
   inputs: {
-    provinceOrState: stateInput,
+    province: provinceInput,
     county: countyInput,
-    cityOrTown: cityInput,
     suburb: suburbInput,
-    neighbourhood: neighbourhoodInput,
-    road: roadInput,
+    city: cityInput,
+    urbun: urbunInput,
+    address: addressInput,
   },
   iconUrl: "https://cdn.parsimap.ir/icons/map-marker.png",
+  tokens: {
+    apiKey: process.env.PMI_API_TOKEN,
+    mapKey: process.env.PMI_API_MAP_TOKEN,
+  },
 });
 
 function showAddress(res: any) {
   //! First method to fill inputs
-  // console.log(res, 'res');
+  console.log(res, "res");
   // const {address} = res || {};
   // stateInput.value = address?.state || address?.province || '';
   // countyInput.value = address?.county || '';

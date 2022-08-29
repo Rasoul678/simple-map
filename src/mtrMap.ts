@@ -1,4 +1,10 @@
-import { MapOptions, MapElement, LatLng, InputField } from "../types";
+import {
+  MapOptions,
+  MapElement,
+  LatLng,
+  InputField,
+  ApiStatusEnum,
+} from "../types";
 import { getAddressByLatLng, getLatLngByAddress } from "./utils";
 
 const { L } = window || {};
@@ -36,18 +42,18 @@ class MtrMap {
     });
 
     //! Add the OpenStreetMap tiles
-    L.tileLayer(
-      "https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png?lang=fa",
-      {
-        maxZoom: 19,
-        attribution:
-          '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>',
-      }
-    ).addTo(map);
+    // L.tileLayer(
+    //   "https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png?lang=fa",
+    //   {
+    //     maxZoom: 19,
+    //     attribution:
+    //       '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>',
+    //   }
+    // ).addTo(map);
 
-    // L.parsimapTileLayer('parsimap-streets-v11-raster', {
-    //     key: 'PMI_MAP_TOKEN',
-    //   }).addTo(map)
+    L.parsimapTileLayer("parsimap-streets-v11-raster", {
+      key: this._options.tokens.mapKey,
+    }).addTo(map);
 
     //! Add Control
     // L.control.scale({imperial: true, metric: true}).addTo(map);
@@ -59,8 +65,8 @@ class MtrMap {
     map.tilt.enable();
 
     //! Show markers on the map
-    this._marker = this._options?.marker || null;
-    this.addMarker(this._options?.marker);
+    this._marker = this._options?.defaultMarker || null;
+    this.addMarker(this._options?.defaultMarker);
   }
 
   private renderMarker(flyDuration: number) {
@@ -108,7 +114,7 @@ class MtrMap {
       }
     );
 
-    if (this._options?.marker) {
+    if (this._options?.defaultMarker) {
       const addressBox = document.querySelector(
         ".MtrMap--address.leaflet-control"
       ) as HTMLElement;
@@ -154,72 +160,91 @@ class MtrMap {
     this.renderMarker(flyDuration);
 
     //! Get new address based on new marker
-    getAddressByLatLng({ latlng: marker, language: "fa" })
+    getAddressByLatLng({
+      key: this._options.tokens.apiKey,
+      location: `${marker.lng},${marker.lat}`,
+    })
       .then((data: any) => {
-        this._options.events.onGetAddress({
-          status: 200,
-          address: data.address,
-        });
-        this.setAddress(data.address);
+        const status: ApiStatusEnum = data.status;
 
-        if (this._options.inputs) {
-          this.setInputs(data.address);
+        //! Fire callback
+        this._options.events.onGetAddress({
+          status,
+          data,
+          error: this.getErrorMessage(status),
+        });
+
+        //! Set strigng address
+        this.setAddress(data);
+
+        //! Set input fields
+        if (this._options.inputs && data) {
+          let inputVlues = { address: data.address };
+
+          new Map(Object.entries(data.subdivisions)).forEach(function (
+            key: any,
+            value: string
+          ) {
+            this[value] = key.title;
+          },
+          inputVlues);
+
+          this.setInputs(inputVlues);
         }
       })
       .catch((error) => {
         this._options.events.onGetAddress({
-          status: 404,
-          address: null,
+          status: 418,
+          data: null,
           error: error.message,
         });
       });
   }
 
-  private setAddress(address: any) {
-    const filterAddress = (item: any) =>
-      !["country_code", "country", "postcode", "ISO3166-2-lvl4"].includes(
-        item[0]
-      );
-    const addressList = Object.entries(address)
-      .filter(filterAddress)
-      .map((item) => item[1])
-      .reverse();
-    const addressString = addressList.join(" - ");
+  private setAddress(data: any) {
+    const subArray = Array.from(Object.entries(data.subdivisions));
+    let addressString: string = "";
 
-    const addressBox = document.querySelector(
-      ".MtrMap--address.leaflet-control"
-    ) as HTMLElement;
+    let names: Record<string, string> = {
+      ostan: "استان",
+      shahrestan: "شهرستان",
+      bakhsh: "بخش",
+      shahr: "شهر",
+      rusta: "روستا",
+    };
+
+    subArray.forEach(function ([name, object]) {
+      addressString += `${names[name]} ${(object as any).title}، `;
+    });
+
+    addressString += data.address;
+
+    const selector = ".MtrMap--address.leaflet-control";
+    const addressBox = document.querySelector(selector) as HTMLElement;
     addressBox.innerText = addressString;
     this._addressString = addressString;
   }
 
-  private setInputs(address: any) {
-    const { provinceOrState, county, suburb, cityOrTown, neighbourhood, road } =
+  private setInputs(values: any) {
+    const { province, county, suburb, city, urbun, address } =
       this._options.inputs;
 
     const {
-      state,
-      province,
-      city,
-      town,
-      county: countyValue,
-      suburb: suburbValue,
-      neighbourhood: neighbourValue,
-      road: roadValue,
-    } = address;
-
-    //! state value
-    const stateValue = state || province;
-    //! city value
-    const cityValue = city || town;
+      ostan: provinceValue,
+      shahrestan: countyValue,
+      bakhsh: suburbValue,
+      shahr: cityValue,
+      rosta: urbunValue,
+      address: addressValue,
+    } = values;
 
     const allInputs = new Map([
-      [provinceOrState, stateValue],
+      [province, provinceValue],
       [county, countyValue],
-      [cityOrTown, cityValue],
+      [city, cityValue],
       [suburb, suburbValue],
-      [neighbourhood, neighbourValue],
-      [road, roadValue],
+      [urbun, urbunValue],
+      [address, addressValue],
     ]);
 
     allInputs.forEach((value, input) => {
@@ -245,6 +270,20 @@ class MtrMap {
     }
 
     return input;
+  }
+
+  getErrorMessage(status: ApiStatusEnum) {
+    const messages: Record<string, string> = {
+      Ok: "پاسخ به درخواست با موفقیت بوده است",
+      UNAUTHORIZED: "توکن درخواستی معتبر نیست",
+      AUTHEXPIRED: "محدودیت زمان وجود دارد",
+      LIMIT_REACHED: "تعداد درخواست‌ها بیش از حد مجاز است",
+      ERROR: "خطایی رخ داده است",
+      INVALID_PARAMETERS: "پارامترهای وارد شده نادرست هستند",
+      SERVICE_UNAVAILABLE: "سرویس از دسترس خارج شده است",
+    };
+
+    return messages[status] || null;
   }
 }
 
@@ -338,4 +377,3 @@ L.leafIcon = function (opts?: any) {
 getLatLngByAddress("تهران میدان ونک").then((res) => console.log(res));
 
 export default MtrMap;
-// export { getAddressByLatLng, getLatLngByAddress };
