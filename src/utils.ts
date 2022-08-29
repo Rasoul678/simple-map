@@ -1,8 +1,8 @@
-import { AddressSearchParams, LatLng } from "../types";
+import { AddressSearchParams, LatLngSearchParams, LatLng } from "../types";
 
 /**
  * Get reverse address by location longitude and latitude.
- * @param params
+ * @param {AddressSearchParams} params
  * @returns Promise
  */
 export const getAddressByLatLng = (params: AddressSearchParams) => {
@@ -15,6 +15,7 @@ export const getAddressByLatLng = (params: AddressSearchParams) => {
     subdivision: params.subdivision || "true",
     request_id: params.request_id || "false",
   };
+  
   const url = new URL("https://api.parsimap.ir/geocode/reverse");
   url.search = new URLSearchParams(searchParams).toString();
 
@@ -31,18 +32,20 @@ export const getAddressByLatLng = (params: AddressSearchParams) => {
 
 /**
  * Query location longitude and latitude by address.
- * @param {string} query
+ * @param {LatLngSearchParams} params
  * @returns Promise
  */
-export const getLatLngByAddress = (query: string) => {
-  const url = new URL("https://nominatim.openstreetmap.org/search");
-  url.search = new URLSearchParams({
-    q: query,
-    format: "json",
-    ["polygon_geojson"]: "1",
-    addressdetails: "1",
-    ["accept-language"]: "fa",
-  }).toString();
+export const getLatLngByAddress = (params: LatLngSearchParams) => {
+  const searchParams: LatLngSearchParams = {
+    search_text: params.search_text,
+    key: params.key,
+    only_in_district: params.only_in_district || "false",
+    subdivision: params.subdivision || "false",
+    plate: params.plate || "false",
+  };
+
+  const url = new URL("https://api.parsimap.ir/geocode/forward");
+  url.search = new URLSearchParams(searchParams).toString();
 
   return new Promise(async (resolve, reject) => {
     try {

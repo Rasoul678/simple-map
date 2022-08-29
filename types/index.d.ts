@@ -73,3 +73,11 @@ export type AddressSearchParams = {
   plate?: StringBool;
   request_id?: StringBool;
 };
+
+export type LatLngSearchParams = {
+    key: string;
+    search_text: string;
+    only_in_district?: StringBool;
+    subdivision?: StringBool;
+    plate?: StringBool;
+  };

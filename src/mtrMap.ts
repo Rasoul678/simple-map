@@ -374,6 +374,5 @@ L.leafIcon = function (opts?: any) {
   return new L.LeafIcon(opts);
 };
 
-getLatLngByAddress("تهران میدان ونک").then((res) => console.log(res));
 
 export default MtrMap;

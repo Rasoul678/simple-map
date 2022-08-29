@@ -61,7 +61,7 @@ const mtrMap = new MTRMap({
 
 function showAddress(res: any) {
   //! First method to fill inputs
-  console.log(res, "res");
+  // console.log(res, "res");
   // const {address} = res || {};
   // stateInput.value = address?.state || address?.province || '';
   // countyInput.value = address?.county || '';
@@ -83,20 +83,24 @@ const dataList = document.querySelector('[data-js="data-list"]');
 
 searchButton &&
   searchButton?.addEventListener("click", () => {
-    getLatLngByAddress((input as HTMLInputElement).value).then((res: any[]) => {
+    getLatLngByAddress({
+      search_text: (input as HTMLInputElement).value,
+      key: process.env.PMI_API_TOKEN,
+    }).then((res: any) => {
       console.log(res);
       dataList.innerHTML = "";
 
-      res.forEach((item) => {
-        const { state, county, city, road } = item.address;
+      res.results.forEach((item: any) => {
+        const {
+          description,
+          geo_location: { center },
+        } = item;
         let optionTag = document.createElement("li");
-        optionTag.innerText = `${state || ""}-${county || ""}-${city || ""}-${
-          road || ""
-        }`;
+        optionTag.innerText = description;
         dataList.appendChild(optionTag);
 
         optionTag.addEventListener("click", () => {
-          mtrMap.addMarker({ lat: item.lat, lng: item.lon });
+          mtrMap.addMarker({ lat: center.lat, lng: center.lng });
         });
       });
     });
