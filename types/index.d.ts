@@ -52,6 +52,7 @@ export interface MapOptions {
   presets?: {
     latlng: Pick<LatLng, "lat" | "lng">;
     zoom: number;
+    zoomControl?: boolean;
     flyMode?: boolean;
     stickyMode?: boolean;
   };
@@ -61,6 +62,7 @@ export interface MapOptions {
   };
   events?: {
     onGetAddress?: (address: AddressResponse) => void;
+    onMapReady?: (map: any) => void
   };
   inputs?: Inputs;
   iconUrl?: string;

@@ -39,15 +39,17 @@ const mtrMap = new MTRMap({
       lng: 51.4,
     },
     zoom: 13,
-    // stickyMode: false,
+    // zoomControl: true,
+    // stickyMode: true,
     // flyMode: false
   },
   marker: {
     deafult: { lat: 35.7, lng: 51.38 },
-    draggable: true
+    draggable: true,
   },
   events: {
     onGetAddress: showAddress,
+    onMapReady: onReady,
   },
   inputs: {
     province: provinceInput,
@@ -63,6 +65,10 @@ const mtrMap = new MTRMap({
     mapKey: process.env.PMI_API_MAP_TOKEN,
   },
 });
+
+function onReady(map: any) {
+  // console.log(map);
+}
 
 function showAddress(res: any) {
   //! First method to fill inputs

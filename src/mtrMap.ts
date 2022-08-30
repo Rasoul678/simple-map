@@ -35,6 +35,19 @@ class MtrMap {
     const map = L.map(this.element, {
       center: [lat, lon],
       zoom: this._options.presets.zoom,
+      zoomControl: this._options.presets.zoomControl,
+    });
+
+    map.whenReady(() => {
+      if (this._options.events.onMapReady) {
+        this._options.events.onMapReady(map);
+      }
+    });
+
+    L.Map.include({
+      getIconUrl: () => {
+        return this._options.iconUrl;
+      },
     });
 
     //! Add the tiles
@@ -49,6 +62,7 @@ class MtrMap {
 
     //! Add Control
     map.addControl(L.Control.addressBox({ position: "bottomleft" }));
+    map.addControl(L.Control.searchBox({ position: "topright" }));
 
     //! Add handlers
     map.addHandler("tilt", L.TiltHandler);
@@ -125,7 +139,12 @@ class MtrMap {
       const addressBox = document.querySelector(
         ".MtrMap--address.leaflet-control"
       ) as HTMLElement;
-      addressBox.style.transform = "translate3d(0,0,0)";
+
+      requestAnimationFrame(() => {
+        if (addressBox) {
+          addressBox.style.transform = "translate3d(0,0,0)";
+        }
+      });
     }
   }
 
@@ -328,14 +347,16 @@ L.Control.AddressBox = L.Control.extend({
   onAdd: function (map: any) {
     const addressDiv = L.DomUtil.create("div");
     addressDiv.classList.add("MtrMap--address");
-    addressDiv.setAttribute("id", "address");
+    addressDiv.setAttribute("id", "address-box");
     L.DomEvent.on(addressDiv, "click", this._onClick, this);
+    L.DomEvent.on(addressDiv, "dblclick", this._onClick, this);
     return addressDiv;
   },
 
   onRemove: function (map: any) {
-    const addressDiv = L.DomUtil.get("address");
+    const addressDiv = L.DomUtil.get("address-box");
     L.DomEvent.off(addressDiv, "click", this._onClick, this);
+    L.DomEvent.off(addressDiv, "dblclick", this._onClick, this);
   },
 
   _onClick: function (e: any) {
@@ -345,6 +366,57 @@ L.Control.AddressBox = L.Control.extend({
 
 L.Control.addressBox = function (opts?: any) {
   return new L.Control.AddressBox(opts);
+};
+
+L.Control.SearchBox = L.Control.extend({
+  onAdd: function (map: any) {
+    const searchDiv = L.DomUtil.create("div");
+    const searchInput = L.DomUtil.create("input");
+    searchDiv.appendChild(searchInput);
+    const Div = L.DomUtil.create("div");
+    const Div1 = L.DomUtil.create("div");
+    const Div2 = L.DomUtil.create("div");
+
+    L.DomEvent.on(searchInput, "blur", function (e: any) {
+      if (!e.target.value) {
+        console.log("blur");
+        Div.remove()
+      }
+    });
+
+    L.DomEvent.on(searchDiv, "mousewheel", function (e: any) {
+      e.stopPropagation();
+    });
+
+    Div.classList.add("MtrMap--serch-results");
+
+    searchDiv.appendChild(Div);
+
+    Div1.innerText = "hello";
+    Div2.innerText = "hello";
+    Div.appendChild(Div1);
+    Div.appendChild(Div2);
+
+    searchDiv.classList.add("MtrMap--search");
+    searchDiv.setAttribute("id", "search-box");
+    L.DomEvent.on(searchDiv, "click", this._onClick, this);
+    L.DomEvent.on(searchDiv, "dblclick", this._onClick, this);
+    return searchDiv;
+  },
+
+  onRemove: function (map: any) {
+    const searchDiv = L.DomUtil.get("search-box");
+    L.DomEvent.off(searchDiv, "click", this._onClick, this);
+    L.DomEvent.off(searchDiv, "dblclick", this._onClick, this);
+  },
+
+  _onClick: function (e: any) {
+    e.stopPropagation();
+  },
+});
+
+L.Control.searchBox = function (opts?: any) {
+  return new L.Control.SearchBox(opts);
 };
 
 //! Custom handler
