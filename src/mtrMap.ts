@@ -16,7 +16,7 @@ class MtrMap {
   private _markerObj: any;
   private _options: MapOptions;
   private _addressString: string | null;
-  private _circle: any;
+  private _icon: any;
 
   constructor(options: MapOptions) {
     if (!L) {
@@ -29,92 +29,99 @@ class MtrMap {
   }
 
   private init() {
-    //! initialize Leaflet
+    //! Initialize map instance
     const { lng: lon, lat } = this._options.presets.latlng;
+
     const map = L.map(this.element, {
       center: [lat, lon],
       zoom: this._options.presets.zoom,
     });
-    this._map = map;
 
-    map.on("click", (e: any) => {
-      this.addMarker(e.latlng);
-    });
-
-    //! Add the OpenStreetMap tiles
-    // L.tileLayer(
-    //   "https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png?lang=fa",
-    //   {
-    //     maxZoom: 19,
-    //     attribution:
-    //       '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>',
-    //   }
-    // ).addTo(map);
-
+    //! Add the tiles
     L.parsimapTileLayer("parsimap-streets-v11-raster", {
       key: this._options.tokens.mapKey,
     }).addTo(map);
 
-    //! Add Control
-    // L.control.scale({imperial: true, metric: true}).addTo(map);
-    // map.addControl(L.Control.geocoder());
-    map.addControl(L.Control.addressBox({ position: "bottomleft" }));
-
-    map.addHandler("tilt", L.TiltHandler);
-
-    map.tilt.enable();
-
-    //! Show markers on the map
-    this._marker = this._options?.defaultMarker || null;
-    this.addMarker(this._options?.defaultMarker);
-  }
-
-  private renderMarker(flyDuration: number) {
-    var icon = L.leafIcon({
+    //! Init icon
+    const icon = L.leafIcon({
       iconUrl: this._options.iconUrl,
     });
 
-    let m = L.customMarker(
-      { lon: this.marker.lng, lat: this.marker.lat },
-      { draggable: true, ...(this._options.iconUrl && { icon: icon }) }
-    );
+    //! Add Control
+    map.addControl(L.Control.addressBox({ position: "bottomleft" }));
 
-    let circle = L.circle([this.marker.lat, this.marker.lng], { radius: 10 });
-    this._markerObj = m;
-    this._circle = circle;
+    //! Add handlers
+    map.addHandler("tilt", L.TiltHandler);
+    map.tilt.enable();
 
-    m.on("dragend", () => {
-      const latLng = m.getLatLng();
-      this.addMarker(latLng);
-    });
+    if (this._options.presets.stickyMode) {
+      map.on("move", (e: any) => {
+        this._markerObj.setLatLng(map.getCenter());
+      });
 
-    if (this.marker.popUp) {
-      m.bindPopup(this.marker.popUp);
+      map.on("dragend", (e: any) => {
+        this.getAddressBy(map.getCenter());
+      });
+    } else {
+      map.on("click", (e: any) => {
+        this.addMarker(e.latlng);
+      });
     }
 
-    m.addTo(this.map);
+    this._map = map;
+    this._icon = icon;
 
-    // let featureGroup = L.featureGroup([this._markerObj, this._circle]).addTo(this.map);
+    //! Show markers on the map
+    this._marker = this._options?.marker?.deafult || null;
+    if (this._marker) {
+      this.addMarker(this._options?.marker?.deafult);
+    }
+  }
 
-    // this.map.fitBounds(featureGroup.getBounds());
+  private renderMarker(flyDuration: number) {
+    const {
+      presets: { stickyMode },
+      marker: { draggable },
+    } = this._options;
 
-    // this.map.setView({lon: this.marker.lng, lat: this.marker.lat}, this.map.getZoom(), {
-    //     "animate": true,
-    //     "pan": {
-    //       "duration": 1.5
-    //     }
-    //   });
+    //* sticky mode has priority over draggable flag
+    //* It means it is draggable if map is in not in sticky mode and has draggable flag on.
+    const isMarkerDraggable = stickyMode ? false : draggable ?? false;
+
+    //! Init marker
+    const markerObj = L.customMarker(
+      { lon: this.marker.lng, lat: this.marker.lat },
+      {
+        draggable: isMarkerDraggable,
+        ...(this._options.iconUrl && { icon: this._icon }),
+      }
+    );
+
+    if (isMarkerDraggable) {
+      markerObj.on("dragend", () => {
+        const latLng = markerObj.getLatLng();
+        this.addMarker(latLng);
+      });
+    }
+
+    this._markerObj = markerObj;
+
+    if (this.marker.popUp) {
+      markerObj.bindPopup(this.marker.popUp);
+    }
+
+    markerObj.addTo(this.map);
 
     this.map.flyTo(
       { lon: this.marker.lng, lat: this.marker.lat },
       this.map.getZoom(),
       {
-        animate: true,
+        animate: this._options.presets.flyMode ?? true,
         duration: flyDuration,
       }
     );
 
-    if (this._options?.defaultMarker) {
+    if (this._options?.marker?.deafult) {
       const addressBox = document.querySelector(
         ".MtrMap--address.leaflet-control"
       ) as HTMLElement;
@@ -151,15 +158,15 @@ class MtrMap {
       this.map.removeLayer(this._markerObj);
     }
 
-    if (this._circle) {
-      this.map.removeLayer(this._circle);
-    }
-
     //! Add new marker
     this._marker = marker;
     this.renderMarker(flyDuration);
 
     //! Get new address based on new marker
+    this.getAddressBy(marker);
+  }
+
+  private getAddressBy(marker: LatLng) {
     getAddressByLatLng({
       key: this._options.tokens.apiKey,
       location: `${marker.lng},${marker.lat}`,
@@ -373,6 +380,5 @@ L.LeafIcon = L.Icon.extend({
 L.leafIcon = function (opts?: any) {
   return new L.LeafIcon(opts);
 };
-
 
 export default MtrMap;

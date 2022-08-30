@@ -52,8 +52,13 @@ export interface MapOptions {
   presets?: {
     latlng: Pick<LatLng, "lat" | "lng">;
     zoom: number;
+    flyMode?: boolean;
+    stickyMode?: boolean;
   };
-  defaultMarker?: LatLng;
+  marker?: {
+    deafult?: LatLng;
+    draggable?: boolean;
+  };
   events?: {
     onGetAddress?: (address: AddressResponse) => void;
   };
@@ -75,9 +80,9 @@ export type AddressSearchParams = {
 };
 
 export type LatLngSearchParams = {
-    key: string;
-    search_text: string;
-    only_in_district?: StringBool;
-    subdivision?: StringBool;
-    plate?: StringBool;
-  };
+  key: string;
+  search_text: string;
+  only_in_district?: StringBool;
+  subdivision?: StringBool;
+  plate?: StringBool;
+};

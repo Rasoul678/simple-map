@@ -39,8 +39,13 @@ const mtrMap = new MTRMap({
       lng: 51.4,
     },
     zoom: 13,
+    // stickyMode: false,
+    // flyMode: false
   },
-  defaultMarker: { lat: 35.7, lng: 51.38 },
+  marker: {
+    deafult: { lat: 35.7, lng: 51.38 },
+    draggable: true
+  },
   events: {
     onGetAddress: showAddress,
   },
