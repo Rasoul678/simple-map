@@ -1,4 +1,4 @@
-import { AddressSearchParams, LatLngSearchParams, LatLng } from "../types";
+import { AddressSearchParams, LatLngSearchParams } from "../types";
 
 /**
  * Get reverse address by location longitude and latitude.
@@ -15,7 +15,7 @@ export const getAddressByLatLng = (params: AddressSearchParams) => {
     subdivision: params.subdivision || "true",
     request_id: params.request_id || "false",
   };
-  
+
   const url = new URL("https://api.parsimap.ir/geocode/reverse");
   url.search = new URLSearchParams(searchParams).toString();
 
@@ -57,3 +57,15 @@ export const getLatLngByAddress = (params: LatLngSearchParams) => {
     }
   });
 };
+
+export function debounce(func: Function, timeout = 300) {
+  let timer: any;
+
+  return (...args: any[]) => {
+    clearTimeout(timer);
+
+    timer = setTimeout(() => {
+      func.apply(this, args);
+    }, timeout);
+  };
+}

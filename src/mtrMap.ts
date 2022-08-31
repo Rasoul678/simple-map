@@ -4,8 +4,10 @@ import {
   LatLng,
   InputField,
   ApiStatusEnum,
+  SearchByAddressResponse,
+  Result,
 } from "../types";
-import { getAddressByLatLng, getLatLngByAddress } from "./utils";
+import { getAddressByLatLng, getLatLngByAddress, debounce } from "./utils";
 
 const { L } = window || {};
 
@@ -45,9 +47,10 @@ class MtrMap {
     });
 
     L.Map.include({
-      getIconUrl: () => {
-        return this._options.iconUrl;
-      },
+      getErrorMessage: this.getErrorMessage,
+      getAddressBy: this.getAddressBy,
+      getLatLngBy: this.getLatLngBy,
+      addMarker: this.addMarker.bind(this),
     });
 
     //! Add the tiles
@@ -74,7 +77,7 @@ class MtrMap {
       });
 
       map.on("dragend", (e: any) => {
-        this.getAddressBy(map.getCenter());
+        this.renderAddressOn(map.getCenter());
       });
     } else {
       map.on("click", (e: any) => {
@@ -99,7 +102,7 @@ class MtrMap {
     } = this._options;
 
     //* sticky mode has priority over draggable flag
-    //* It means it is draggable if map is in not in sticky mode and has draggable flag on.
+    //* It means it is draggable if map is not in sticky mode and has draggable flag on.
     const isMarkerDraggable = stickyMode ? false : draggable ?? false;
 
     //! Init marker
@@ -170,8 +173,6 @@ class MtrMap {
     let distance = L.GeometryUtil.distance(this.map, marker, this.marker);
     let flyDuration = Math.min(Math.max(0.5, +(distance / 2500).toFixed(1)), 3);
 
-    // console.log(flyDuration);
-
     //! Remove last marker
     if (this._markerObj) {
       this.map.removeLayer(this._markerObj);
@@ -182,53 +183,44 @@ class MtrMap {
     this.renderMarker(flyDuration);
 
     //! Get new address based on new marker
-    this.getAddressBy(marker);
+    this.renderAddressOn(marker);
   }
 
-  private getAddressBy(marker: LatLng) {
-    getAddressByLatLng({
-      key: this._options.tokens.apiKey,
-      location: `${marker.lng},${marker.lat}`,
-    })
-      .then((data: any) => {
-        const status: ApiStatusEnum = data.status;
+  private renderAddressOn = async (marker: LatLng) => {
+    const data = await this.getAddressBy(marker);
 
-        //! Fire callback
-        this._options.events.onGetAddress({
-          status,
-          data,
-          error: this.getErrorMessage(status),
-        });
+    const status: ApiStatusEnum = data.status;
 
-        //! Set strigng address
-        this.setAddress(data);
-
-        //! Set input fields
-        if (this._options.inputs && data) {
-          let inputVlues = { address: data.address };
-
-          new Map(Object.entries(data.subdivisions)).forEach(function (
-            key: any,
-            value: string
-          ) {
-            this[value] = key.title;
-          },
-          inputVlues);
-
-          this.setInputs(inputVlues);
-        }
-      })
-      .catch((error) => {
-        this._options.events.onGetAddress({
-          status: 418,
-          data: null,
-          error: error.message,
-        });
+    if (status === "OK") {
+      //! Fire callback
+      this._options.events.onGetAddress({
+        status,
+        data,
+        error: this.getErrorMessage(status),
       });
-  }
 
-  private setAddress(data: any) {
-    const subArray = Array.from(Object.entries(data.subdivisions));
+      //! Set strigng address
+      this.setAddressString(data);
+
+      //! Set input fields
+      if (this._options.inputs && data) {
+        let inputVlues = { address: data.address };
+
+        new Map(Object.entries(data?.subdivisions || {})).forEach(function (
+          key: any,
+          value: string
+        ) {
+          this[value] = key.title;
+        },
+        inputVlues);
+
+        this.setInputs(inputVlues);
+      }
+    }
+  };
+
+  private setAddressString(data: any) {
+    const subArray = Array.from(Object.entries(data?.subdivisions || {}));
     let addressString: string = "";
 
     let names: Record<string, string> = {
@@ -300,7 +292,7 @@ class MtrMap {
 
   getErrorMessage(status: ApiStatusEnum) {
     const messages: Record<string, string> = {
-      Ok: "پاسخ به درخواست با موفقیت بوده است",
+      OK: "پاسخ به درخواست با موفقیت بوده است",
       UNAUTHORIZED: "توکن درخواستی معتبر نیست",
       AUTHEXPIRED: "محدودیت زمان وجود دارد",
       LIMIT_REACHED: "تعداد درخواست‌ها بیش از حد مجاز است",
@@ -311,6 +303,25 @@ class MtrMap {
 
     return messages[status] || null;
   }
+
+  private getLatLngBy = async (
+    address: string
+  ): Promise<SearchByAddressResponse> => {
+    const response = await getLatLngByAddress({
+      key: this._options.tokens.apiKey,
+      search_text: address,
+    });
+
+    return response as SearchByAddressResponse;
+  };
+
+  private getAddressBy = async (marker: LatLng) => {
+    const data: any = await getAddressByLatLng({
+      key: this._options.tokens.apiKey,
+      location: `${marker.lng},${marker.lat}`,
+    });
+    return data;
+  };
 }
 
 //! Custome marker
@@ -370,38 +381,81 @@ L.Control.addressBox = function (opts?: any) {
 
 L.Control.SearchBox = L.Control.extend({
   onAdd: function (map: any) {
-    const searchDiv = L.DomUtil.create("div");
+    const container = L.DomUtil.create("div");
     const searchInput = L.DomUtil.create("input");
-    searchDiv.appendChild(searchInput);
-    const Div = L.DomUtil.create("div");
-    const Div1 = L.DomUtil.create("div");
-    const Div2 = L.DomUtil.create("div");
 
+    searchInput.setAttribute("placeholder", "جستجوس آدرس");
+    container.classList.add("MtrMap--search");
+    requestAnimationFrame(() => {
+      container.classList.add("show-box");
+    });
+    container.setAttribute("id", "search-box");
+
+    container.appendChild(searchInput);
+
+    const resultsWrapper = L.DomUtil.create("div");
+    resultsWrapper.classList.add("MtrMap--search-results");
+
+    container.appendChild(resultsWrapper);
+
+    //! Event listeners
+    //* On blur input
     L.DomEvent.on(searchInput, "blur", function (e: any) {
       if (!e.target.value) {
         console.log("blur");
-        Div.remove()
       }
     });
 
-    L.DomEvent.on(searchDiv, "mousewheel", function (e: any) {
+    //* On focus input
+    L.DomEvent.on(searchInput, "focus", function (e: any) {
+      if (resultsWrapper.hasChildNodes()) {
+        resultsWrapper.classList.add("show-results");
+      }
+    });
+
+    //* On change input
+    L.DomEvent.on(
+      searchInput,
+      "input",
+      debounce(async (e: any) => {
+        const searchText = (e.target as HTMLInputElement).value;
+        if (!searchText) {
+          resultsWrapper.innerHTML = "";
+          resultsWrapper.classList.remove("show-results");
+        }
+        const data: SearchByAddressResponse = await map.getLatLngBy(searchText);
+
+        if (data.status === "OK") {
+          if (data.results.length) {
+            resultsWrapper.classList.add("show-results");
+          }
+
+          resultsWrapper.innerHTML = "";
+
+          data.results.forEach((res) => {
+            const result = this._createResultElement(res);
+            resultsWrapper.appendChild(result);
+
+            result.addEventListener("click", () => {
+              map.addMarker(res.geo_location.center);
+              resultsWrapper.classList.remove("show-results");
+              searchInput.value = res.description;
+            });
+          });
+        }
+      }, 700)
+    );
+
+    //* On mouse wheel container
+    L.DomEvent.on(container, "mousewheel", function (e: any) {
       e.stopPropagation();
     });
 
-    Div.classList.add("MtrMap--serch-results");
+    //* On click and double click contaiber
+    L.DomEvent.on(container, "click", this._onClick, this);
+    L.DomEvent.on(container, "dblclick", this._onClick, this);
 
-    searchDiv.appendChild(Div);
-
-    Div1.innerText = "hello";
-    Div2.innerText = "hello";
-    Div.appendChild(Div1);
-    Div.appendChild(Div2);
-
-    searchDiv.classList.add("MtrMap--search");
-    searchDiv.setAttribute("id", "search-box");
-    L.DomEvent.on(searchDiv, "click", this._onClick, this);
-    L.DomEvent.on(searchDiv, "dblclick", this._onClick, this);
-    return searchDiv;
+    return container;
   },
 
   onRemove: function (map: any) {
@@ -412,6 +466,14 @@ L.Control.SearchBox = L.Control.extend({
 
   _onClick: function (e: any) {
     e.stopPropagation();
+  },
+
+  _createResultElement: function (result: Result) {
+    const element = L.DomUtil.create("div");
+    element.innerText = result.description;
+    element.classList.add("MtrMap--search-item");
+
+    return element;
   },
 });
 

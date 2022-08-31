@@ -44,7 +44,7 @@ const mtrMap = new MTRMap({
     // flyMode: false
   },
   marker: {
-    deafult: { lat: 35.7, lng: 51.38 },
+    // deafult: { lat: 35.7, lng: 51.38 },
     draggable: true,
   },
   events: {

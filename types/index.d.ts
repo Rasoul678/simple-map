@@ -5,8 +5,8 @@ declare global {
   }
 }
 
-export type MapElement = string | HTMLElement;
-export type LatLng = {
+type MapElement = string | HTMLElement;
+type LatLng = {
   lat: number;
   lng: number;
   popUp?: string;
@@ -17,6 +17,24 @@ type AddressResponse = {
   data: { [key: string]: string } | null;
   error?: string | null;
 };
+
+type Result = {
+  description: string;
+  geo_location: {
+    category: string;
+    title: string;
+    center: Pick<LatLng, "lat" | "lng">;
+    north_east: Pick<LatLng, "lat" | "lng">;
+    south_west: Pick<LatLng, "lat" | "lng">;
+  };
+};
+
+interface SearchByAddressResponse {
+  Consumer: number;
+  results: Result[];
+  search_type: string;
+  status: ApiStatusEnum;
+}
 
 type InputField = HTMLInputElement | string;
 
@@ -30,12 +48,12 @@ declare enum InputsEnum {
 }
 
 declare enum ApiStatusEnum {
-  OK,
-  UNAUTHORIZED,
-  LIMIT_REACHED,
-  ERROR,
-  INVALID_PARAMETERS,
-  SERVICE_UNAVAILABLE,
+  OK = "OK",
+  UNAUTHORIZED = "UNAUTHORIZED",
+  LIMIT_REACHED = "LIMIT_REACHED",
+  ERROR = "ERROR",
+  INVALID_PARAMETERS = "INVALID_PARAMETERS",
+  SERVICE_UNAVAILABLE = "SERVICE_UNAVAILABLE",
 }
 
 type Inputs = {
@@ -47,7 +65,7 @@ type Tokens = {
   mapKey: string;
 };
 
-export interface MapOptions {
+interface MapOptions {
   element: MapElement;
   presets?: {
     latlng: Pick<LatLng, "lat" | "lng">;
@@ -62,7 +80,7 @@ export interface MapOptions {
   };
   events?: {
     onGetAddress?: (address: AddressResponse) => void;
-    onMapReady?: (map: any) => void
+    onMapReady?: (map: any) => void;
   };
   inputs?: Inputs;
   iconUrl?: string;
@@ -71,7 +89,7 @@ export interface MapOptions {
 
 type StringBool = "true" | "false";
 
-export type AddressSearchParams = {
+type AddressSearchParams = {
   key: string;
   location: string;
   local_address?: StringBool;
