@@ -68,7 +68,7 @@ type Tokens = {
 interface MapOptions {
   element: MapElement;
   presets?: {
-    latlng: Pick<LatLng, "lat" | "lng">;
+    center: Pick<LatLng, "lat" | "lng">;
     zoom: number;
     zoomControl?: boolean;
     flyMode?: boolean;

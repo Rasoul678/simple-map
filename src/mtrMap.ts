@@ -32,7 +32,7 @@ class MtrMap {
 
   private init() {
     //! Initialize map instance
-    const { lng: lon, lat } = this._options.presets.latlng;
+    const { lng: lon, lat } = this._options.presets.center;
 
     const map = L.map(this.element, {
       center: [lat, lon],
@@ -170,7 +170,9 @@ class MtrMap {
   addMarker(marker: LatLng) {
     if (!marker) return;
 
-    let distance = L.GeometryUtil.distance(this.map, marker, this.marker);
+    let prevMarker = this.marker || this._options.presets.center;
+
+    let distance = L.GeometryUtil.distance(this.map, marker, prevMarker);
     let flyDuration = Math.min(Math.max(0.5, +(distance / 2500).toFixed(1)), 3);
 
     //! Remove last marker
