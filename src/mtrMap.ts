@@ -5,9 +5,9 @@ import {
   InputField,
   ApiStatusEnum,
   SearchByAddressResponse,
-  Result,
 } from "../types";
-import { getAddressByLatLng, getLatLngByAddress, debounce } from "./utils";
+import { getAddressByLatLng, getLatLngByAddress } from "./utils";
+import { geocode, footer, customMarker, customIcon } from "./plugins";
 
 const { L } = window || {};
 
@@ -22,7 +22,9 @@ class MtrMap {
 
   constructor(options: MapOptions) {
     if (!L) {
-      throw new Error("Please add leaflet scripts to head tag first.");
+      throw new Error(
+        "Please add leaflet and other necessary scripts to head tag."
+      );
     }
 
     this._element = options.element;
@@ -62,13 +64,18 @@ class MtrMap {
     }).addTo(map);
 
     //! Init icon
-    const icon = L.leafIcon({
+    const icon = customIcon({
       iconUrl: this._options.iconUrl,
     });
 
     //! Add Control
-    map.addControl(L.Control.addressBox({ position: "bottomleft" }));
-    map.addControl(L.Control.searchBox({ position: "topright" }));
+    if (this._options.plugins.includes("footer")) {
+      map.addControl(footer({ position: "bottomleft" }));
+    }
+
+    if (this._options.plugins.includes("geocode")) {
+      map.addControl(geocode({ position: "topright" }));
+    }
 
     //! Add handlers
     map.addHandler("tilt", L.TiltHandler);
@@ -109,7 +116,7 @@ class MtrMap {
     const isMarkerDraggable = stickyMode ? false : draggable ?? false;
 
     //! Init marker
-    const markerObj = L.customMarker(
+    const markerObj = customMarker(
       { lon: this.marker.lng, lat: this.marker.lat },
       {
         draggable: isMarkerDraggable,
@@ -244,7 +251,9 @@ class MtrMap {
 
     const selector = ".MtrMap--address.leaflet-control";
     const addressBox = document.querySelector(selector) as HTMLElement;
-    addressBox.innerText = addressString;
+    if (addressBox) {
+      addressBox.innerText = addressString;
+    }
     this._addressString = addressString;
   }
 
@@ -329,176 +338,7 @@ class MtrMap {
   };
 }
 
-//! Custome marker
-L.CustomMarker = L.Marker.extend({
-  onAdd: function (map: any) {
-    this.on("click", this._clickHandler);
-    this.on("dragend", this._dragHandler);
-    L.Marker.prototype.onAdd.call(this, map);
-  },
-
-  onRemove: function (map: any) {
-    this.off("click", this._clickHandler);
-    this.off("dragend", this._dragHandler);
-    L.Marker.prototype.onRemove.call(this, map);
-  },
-
-  _clickHandler: function (e: any, map: any) {
-    //! Nothing to do here
-  },
-
-  _dragHandler: function (e: any) {
-    //! Nothing to do here
-    // const latLng = this.getLatLng();
-    // console.log(latLng);
-  },
-});
-
-L.customMarker = function (latLng: any, options: any) {
-  return new L.CustomMarker(latLng, options);
-};
-
-//! Custome control
-L.Control.AddressBox = L.Control.extend({
-  onAdd: function (map: any) {
-    const addressDiv = L.DomUtil.create("div");
-    addressDiv.classList.add("MtrMap--address");
-    addressDiv.setAttribute("id", "address-box");
-    L.DomEvent.on(addressDiv, "click", this._onClick, this);
-    L.DomEvent.on(addressDiv, "dblclick", this._onClick, this);
-    return addressDiv;
-  },
-
-  onRemove: function (map: any) {
-    const addressDiv = L.DomUtil.get("address-box");
-    L.DomEvent.off(addressDiv, "click", this._onClick, this);
-    L.DomEvent.off(addressDiv, "dblclick", this._onClick, this);
-  },
-
-  _onClick: function (e: any) {
-    e.stopPropagation();
-  },
-});
-
-L.Control.addressBox = function (opts?: any) {
-  return new L.Control.AddressBox(opts);
-};
-
-L.Control.SearchBox = L.Control.extend({
-  onAdd: function (map: any) {
-    const container = L.DomUtil.create("div");
-    const searchInput = L.DomUtil.create("input");
-
-    searchInput.setAttribute("placeholder", "جستجوس آدرس");
-    container.classList.add("MtrMap--search");
-    requestAnimationFrame(() => {
-      container.classList.add("show-box");
-    });
-    container.setAttribute("id", "search-box");
-
-    container.appendChild(searchInput);
-
-    const resultsWrapper = L.DomUtil.create("div");
-    resultsWrapper.classList.add("MtrMap--search-results");
-
-    container.appendChild(resultsWrapper);
-
-    //! Event listeners
-    //* On blur input
-    L.DomEvent.on(searchInput, "blur", function (e: any) {
-      if (!e.target.value) {
-        console.log("blur");
-      }
-    });
-
-    //* On focus input
-    L.DomEvent.on(searchInput, "focus", function (e: any) {
-      if (resultsWrapper.hasChildNodes()) {
-        resultsWrapper.classList.add("show-results");
-      }
-    });
-
-    //* On change input
-    L.DomEvent.on(
-      searchInput,
-      "input",
-      debounce(async (e: any) => {
-        const searchText = (e.target as HTMLInputElement).value;
-        if (!searchText) {
-          resultsWrapper.innerHTML = "";
-          resultsWrapper.classList.remove("show-results");
-        }
-        const data: SearchByAddressResponse = await map.getLatLngBy(searchText);
-
-        if (data.status === "OK") {
-          if (data.results.length) {
-            resultsWrapper.classList.add("show-results");
-          }
-
-          resultsWrapper.innerHTML = "";
-
-          data.results.forEach((res) => {
-            const result = this._createResultElement(res);
-            resultsWrapper.appendChild(result);
-
-            result.addEventListener("click", () => {
-              map.addMarker(res.geo_location.center);
-              resultsWrapper.classList.remove("show-results");
-              searchInput.value = res.description;
-            });
-          });
-        }
-      }, 700)
-    );
-
-    //* On mouse wheel container
-    L.DomEvent.on(container, "mousewheel", function (e: any) {
-      e.stopPropagation();
-    });
-
-    //* On click and double click contaiber
-    L.DomEvent.on(container, "click", this._onClick, this);
-    L.DomEvent.on(container, "dblclick", this._onClick, this);
-
-    return container;
-  },
-
-  onRemove: function (map: any) {
-    const searchDiv = L.DomUtil.get("search-box");
-    L.DomEvent.off(searchDiv, "click", this._onClick, this);
-    L.DomEvent.off(searchDiv, "dblclick", this._onClick, this);
-  },
-
-  _onClick: function (e: any) {
-    e.stopPropagation();
-  },
-
-  _createResultElement: function (result: Result) {
-    const resItem = L.DomUtil.create("div");
-    const resText = L.DomUtil.create("span");
-    const pinSvg = `
-      <svg style="width: 24px; height: 24px; fill: #000">
-        <path
-          fill-rule="evenodd"
-          d="M4 9.611C4 5.391 7.59 2 12 2s8 3.39 8 7.611c0 2.818-1.425 5.518-3.768 8.034a23.496 23.496 0 01-2.514 2.322c-.517.413-.923.706-1.166.867L12 21.2l-.552-.366c-.243-.16-.65-.454-1.166-.867a23.499 23.499 0 01-2.514-2.322C5.425 15.129 4 12.428 4 9.61zm8.47 8.794c.784-.627 1.569-1.34 2.298-2.124C16.8 14.101 18 11.827 18 9.611 18 6.521 15.33 4 12 4S6 6.522 6 9.611c0 2.215 1.2 4.49 3.232 6.67A21.536 21.536 0 0012 18.769c.148-.111.305-.233.47-.364zM12 14a4.001 4.001 0 010-8 4.001 4.001 0 010 8zm0-2a2.001 2.001 0 000-4 2.001 2.001 0 000 4z"
-          clip-rule="evenodd"
-        ></path>
-      </svg>
-    `;
-    resItem.innerHTML = pinSvg;
-    resText.innerText = result.description;
-    resItem.appendChild(resText);
-    resItem.classList.add("MtrMap--search-item");
-
-    return resItem;
-  },
-});
-
-L.Control.searchBox = function (opts?: any) {
-  return new L.Control.SearchBox(opts);
-};
-
-//! Custom handler
+//! Tilt handler
 L.TiltHandler = L.Handler.extend({
   addHooks: function (map: any) {
     let portrait = window.matchMedia("(orientation: portrait)");
@@ -516,20 +356,5 @@ L.TiltHandler = L.Handler.extend({
     console.log(this);
   },
 });
-
-//! Custom icon
-L.LeafIcon = L.Icon.extend({
-  options: {
-    iconAnchor: [15, 42],
-    // iconSize: [38, 95],
-    // shadowSize: [50, 64],
-    // shadowAnchor: [4, 62],
-    // popupAnchor: [-3, -76],
-  },
-});
-
-L.leafIcon = function (opts?: any) {
-  return new L.LeafIcon(opts);
-};
 
 export default MtrMap;

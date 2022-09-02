@@ -63,6 +63,7 @@ const mtrMap = new MTRMap({
     apiKey: process.env.PMI_API_TOKEN,
     mapKey: process.env.PMI_API_MAP_TOKEN,
   },
+  plugins: ["geocode"],
 });
 
 function onReady(map: any) {

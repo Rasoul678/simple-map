@@ -85,6 +85,7 @@ interface MapOptions {
   inputs?: Inputs;
   iconUrl?: string;
   tokens: Tokens;
+  plugins?: ["footer" | "geocode"];
 }
 
 type StringBool = "true" | "false";
