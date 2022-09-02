@@ -11,7 +11,6 @@ window.MtrMap = MtrMap;
 export { getAddressByLatLng, getLatLngByAddress };
 
 const element1 = document.querySelector("#map") as HTMLElement;
-const button = document.querySelector('[data-js="add"]') as HTMLElement;
 const provinceInput = document.querySelector(
   '[data-js="province"]'
 ) as HTMLInputElement;
@@ -81,38 +80,3 @@ function showAddress(res: any) {
   // neighbourhoodInput.value = address?.neighbourhood || '';
   // roadInput.value = address?.road || '';
 }
-
-button &&
-  button.addEventListener("click", () => {
-    mtrMap.addMarker({ lat: 29.60739350145135, lng: 52.532415968397186 });
-    console.log(mtrMap.marker, "Shiraz");
-  });
-
-const input = document.querySelector('[data-js="search"]');
-const searchButton = document.querySelector('[data-js="search-btn"]');
-const dataList = document.querySelector('[data-js="data-list"]');
-
-searchButton &&
-  searchButton?.addEventListener("click", () => {
-    getLatLngByAddress({
-      search_text: (input as HTMLInputElement).value,
-      key: process.env.PMI_API_TOKEN,
-    }).then((res: any) => {
-      console.log(res);
-      dataList.innerHTML = "";
-
-      res.results.forEach((item: any) => {
-        const {
-          description,
-          geo_location: { center },
-        } = item;
-        let optionTag = document.createElement("li");
-        optionTag.innerText = description;
-        dataList.appendChild(optionTag);
-
-        optionTag.addEventListener("click", () => {
-          mtrMap.addMarker({ lat: center.lat, lng: center.lng });
-        });
-      });
-    });
-  });

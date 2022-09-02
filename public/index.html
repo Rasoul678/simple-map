@@ -35,87 +35,73 @@
     <title>Mootanroo | Map</title>
   </head>
   <body>
+    <div style="height: 300px;" class="w-50 m-auto">
+      <div id="map"></div>
+    </div>
+
     <div style="display: flex; margin: 1rem; gap: 2rem">
-      <div style="width: 50%">
-        <h2>آدرس:</h2>
-        <div class="row">
-          <div class="col-lg-6 my-2">
-            <input
-              type="text"
-              class="form-control"
-              placeholder="استان"
-              aria-describedby="استان"
-              data-js="province"
-              id="provinceInput"
-            />
-          </div>
-          <div class="col-lg-6 my-2">
-            <input
-              type="text"
-              class="form-control"
-              placeholder="شهرستان"
-              aria-describedby="شهرستان"
-              data-js="county"
-              id="countyInput"
-            />
-          </div>
-          <div class="col-lg-6 my-2">
-            <input
-              type="text"
-              class="form-control"
-              placeholder="بخش"
-              aria-describedby="بخش"
-              data-js="suburb"
-              id="suburbInput"
-            />
-          </div>
-          <div class="col-lg-6 my-2">
-            <input
-              type="text"
-              class="form-control"
-              placeholder="شهر"
-              aria-describedby="شهر"
-              data-js="city"
-              id="cityInput"
-            />
-          </div>
-          <div class="col-lg-6 my-2">
-            <input
-              type="text"
-              class="form-control"
-              placeholder="روستا"
-              aria-describedby="روستا"
-              data-js="urbun"
-              id="urbunInput"
-            />
-          </div>
-          <div class="col-lg-6 my-2">
-            <input
-              type="text"
-              class="form-control"
-              placeholder="آدرس"
-              aria-describedby="آدرس"
-              data-js="address"
-              id="addressInput"
-            />
-          </div>
-          <div class="d-flex d-row">
-            <button data-js="search-btn" class="btn btn-info">search</button>
-            <input
-              data-js="search"
-              type="text"
-              aria-label="search address"
-              style="margin-left: auto"
-            />
-            <button data-js="add" class="btn btn-success">
-              Jump to Shiraz
-            </button>
-          </div>
-          <ul data-js="data-list"></ul>
+      <h2>آدرس:</h2>
+      <div class="row">
+        <div class="col-lg-6 my-2">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="استان"
+            aria-describedby="استان"
+            data-js="province"
+            id="provinceInput"
+          />
         </div>
-      </div>
-      <div class="MtrMap--container">
-        <div id="map"></div>
+        <div class="col-lg-6 my-2">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="شهرستان"
+            aria-describedby="شهرستان"
+            data-js="county"
+            id="countyInput"
+          />
+        </div>
+        <div class="col-lg-6 my-2">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="بخش"
+            aria-describedby="بخش"
+            data-js="suburb"
+            id="suburbInput"
+          />
+        </div>
+        <div class="col-lg-6 my-2">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="شهر"
+            aria-describedby="شهر"
+            data-js="city"
+            id="cityInput"
+          />
+        </div>
+        <div class="col-lg-6 my-2">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="روستا"
+            aria-describedby="روستا"
+            data-js="urbun"
+            id="urbunInput"
+          />
+        </div>
+        <div class="col-lg-6 my-2">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="آدرس"
+            aria-describedby="آدرس"
+            data-js="address"
+            id="addressInput"
+          />
+        </div>
       </div>
     </div>
   </body>
