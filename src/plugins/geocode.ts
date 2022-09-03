@@ -16,7 +16,7 @@ L.Control.SearchBox = L.Control.extend({
 
     container.classList.add("MtrMap--search");
     container.setAttribute("id", "search-box");
-    
+
     requestAnimationFrame(() => {
       container.classList.add("show-box");
     });
@@ -66,7 +66,7 @@ L.Control.SearchBox = L.Control.extend({
 
     L.DomEvent.on(searchInput, "blur", this._onBlur, resultsWrapper);
     L.DomEvent.on(searchInput, "focus", this._onFocus, resultsWrapper);
-    L.DomEvent.on(container, "mousewheel", this._onMouseWheel, this);
+    L.DomEvent.on(container, "wheel", this._onMouseWheel, this);
     L.DomEvent.on(container, "click", this._onClick, this);
     L.DomEvent.on(container, "dblclick", this._onClick, this);
     L.DomEvent.on(container, "mousedown", this._disableDrag, this);
@@ -81,7 +81,7 @@ L.Control.SearchBox = L.Control.extend({
     const searchInput = L.DomUtil.get("search-input");
 
     L.DomEvent.off(searchInput, "blur", this._onBlur, searchResults);
-    L.DomEvent.off(searchBox, "mousewheel", this._onMouseWheel, this);
+    L.DomEvent.off(searchBox, "wheel", this._onMouseWheel, this);
     L.DomEvent.off(searchBox, "click", this._onClick, this);
     L.DomEvent.off(searchBox, "dblclick", this._onClick, this);
     L.DomEvent.off(searchBox, "mousedown", this._disableDrag, this);
@@ -115,21 +115,62 @@ L.Control.SearchBox = L.Control.extend({
   },
 
   _createResultElement: function (result: Result) {
+    const {
+      description,
+      geo_location: { title },
+    } = result;
+
     const resItem = L.DomUtil.create("div");
-    const resText = L.DomUtil.create("span");
-    const pinSvg = `
-        <svg style="width: 24px; height: 24px; fill: #000">
-          <path
-            fill-rule="evenodd"
-            d="M4 9.611C4 5.391 7.59 2 12 2s8 3.39 8 7.611c0 2.818-1.425 5.518-3.768 8.034a23.496 23.496 0 01-2.514 2.322c-.517.413-.923.706-1.166.867L12 21.2l-.552-.366c-.243-.16-.65-.454-1.166-.867a23.499 23.499 0 01-2.514-2.322C5.425 15.129 4 12.428 4 9.61zm8.47 8.794c.784-.627 1.569-1.34 2.298-2.124C16.8 14.101 18 11.827 18 9.611 18 6.521 15.33 4 12 4S6 6.522 6 9.611c0 2.215 1.2 4.49 3.232 6.67A21.536 21.536 0 0012 18.769c.148-.111.305-.233.47-.364zM12 14a4.001 4.001 0 010-8 4.001 4.001 0 010 8zm0-2a2.001 2.001 0 000-4 2.001 2.001 0 000 4z"
-            clip-rule="evenodd"
-          ></path>
-        </svg>
-      `;
-    resItem.innerHTML = pinSvg;
-    resText.innerText = result.description;
-    resItem.appendChild(resText);
+    const resTitle = L.DomUtil.create("span");
+    const resDescription = L.DomUtil.create("p");
+
+    resTitle.classList.add("search-title");
+    resDescription.classList.add("search-description");
     resItem.classList.add("MtrMap--search-item");
+
+    const pinSvg = `
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="18"
+        height="18"
+        viewBox="0 0 18 18"
+      >
+        <defs>
+          <style>
+            .a {
+              fill: #707070;
+            }
+            .b {
+              fill: none;
+            }
+          </style>
+        </defs>
+        <g transform="translate(-1495.335 -392)">
+          <g transform="translate(1495.335 392)">
+            <g transform="translate(2.707 0.541)">
+              <path
+                class="a"
+                d="M5847.325,3927.6l-.005-.006a6.608,6.608,0,0,0-8.8.006,6.134,6.134,0,0,0-.582,8.043l4.98,6.624,4.975-6.613A6.136,6.136,0,0,0,5847.325,3927.6Zm-.159,7.548-4.239,5.635-4.255-5.646a5.286,5.286,0,0,1,.489-6.926,5.652,5.652,0,0,1,7.521-.006A5.29,5.29,0,0,1,5847.166,3935.153Z"
+                transform="translate(-5836.709 -3925.926)"
+              />
+              <path
+                class="a"
+                d="M5847.87,3932.89a2.231,2.231,0,1,0,.654,1.578A2.238,2.238,0,0,0,5847.87,3932.89Zm-1.578,2.935a1.36,1.36,0,1,1,1.363-1.358A1.361,1.361,0,0,1,5846.292,3935.825Z"
+                transform="translate(-5840.019 -3928.764)"
+              />
+            </g>
+            <rect class="b" width="18" height="18" />
+          </g>
+        </g>
+      </svg>
+    `;
+
+    resItem.innerHTML = pinSvg;
+    resTitle.innerText = title;
+    resDescription.innerText = description;
+
+    resItem.appendChild(resTitle);
+    resItem.appendChild(resDescription);
 
     return resItem;
   },
