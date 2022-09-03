@@ -1,3 +1,6 @@
+/**
+ * This plugin allows us to customize leaflet marker in any way we like
+ */
 const { L } = window || {};
 
 L.CustomMarker = L.Marker.extend({

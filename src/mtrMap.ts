@@ -36,12 +36,14 @@ class MtrMap {
     //! Initialize map instance
     const { lng: lon, lat } = this._options.presets.center;
 
+    //* Instantiate a map object
     const map = L.map(this.element, {
       center: [lat, lon],
       zoom: this._options.presets.zoom,
       zoomControl: this._options.presets.zoomControl,
     });
 
+    //* Fires when map is ready (handy sometimes!)
     map.whenReady(() => {
       if (this._options.events.onMapReady) {
         this._options.events.onMapReady(map);
@@ -51,6 +53,7 @@ class MtrMap {
     //! Add class to map container
     map.getContainer().classList.add("MtrMap--container");
 
+    //* Include some properties to map instance (we can access them inside map object)
     L.Map.include({
       getErrorMessage: this.getErrorMessage,
       getAddressBy: this.getAddressBy,
@@ -139,6 +142,7 @@ class MtrMap {
 
     markerObj.addTo(this.map);
 
+    //* Fly effect on map
     this.map.flyTo(
       { lon: this.marker.lng, lat: this.marker.lat },
       this.map.getZoom(),
@@ -180,8 +184,11 @@ class MtrMap {
   addMarker(marker: LatLng) {
     if (!marker) return;
 
+    //* Get previous marker on map (if not, revert to the map center!)
     let prevMarker = this.marker || this._options.presets.center;
 
+    //* Calculate distance between tow targets
+    //* and then indicate how much the fly duration should be
     let distance = L.GeometryUtil.distance(this.map, marker, prevMarker);
     let flyDuration = Math.min(Math.max(0.5, +(distance / 2500).toFixed(1)), 3);
 

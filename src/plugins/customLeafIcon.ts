@@ -1,3 +1,6 @@
+/**
+ * This plugin allows us to customize leaflet marker icons in any way we like
+ */
 const { L } = window || {};
 
 L.LeafIcon = L.Icon.extend({

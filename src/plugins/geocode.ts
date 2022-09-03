@@ -1,3 +1,6 @@
+/**
+ * Out of the box, this plugin provides search capabilities for maps
+ */
 import { Result, SearchByAddressResponse } from "../../types";
 import { debounce } from "../utils";
 
@@ -12,10 +15,11 @@ L.Control.SearchBox = L.Control.extend({
     searchInput.setAttribute("id", "search-input");
 
     container.classList.add("MtrMap--search");
+    container.setAttribute("id", "search-box");
+    
     requestAnimationFrame(() => {
       container.classList.add("show-box");
     });
-    container.setAttribute("id", "search-box");
 
     container.appendChild(searchInput);
 
