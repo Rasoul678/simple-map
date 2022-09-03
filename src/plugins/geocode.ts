@@ -9,6 +9,8 @@ L.Control.SearchBox = L.Control.extend({
     const searchInput = L.DomUtil.create("input");
 
     searchInput.setAttribute("placeholder", "جستجوس آدرس");
+    searchInput.setAttribute("id", "search-input");
+
     container.classList.add("MtrMap--search");
     requestAnimationFrame(() => {
       container.classList.add("show-box");
@@ -19,23 +21,11 @@ L.Control.SearchBox = L.Control.extend({
 
     const resultsWrapper = L.DomUtil.create("div");
     resultsWrapper.classList.add("MtrMap--search-results");
+    resultsWrapper.setAttribute("id", "search-results");
 
     container.appendChild(resultsWrapper);
 
     //! Event listeners
-    //* On blur input
-    L.DomEvent.on(searchInput, "blur", function (e: any) {
-      if (!e.target.value) {
-        console.log("blur");
-      }
-    });
-
-    //* On focus input
-    L.DomEvent.on(searchInput, "focus", function (e: any) {
-      if (resultsWrapper.hasChildNodes()) {
-        resultsWrapper.classList.add("show-results");
-      }
-    });
 
     //* On change input
     L.DomEvent.on(
@@ -70,26 +60,54 @@ L.Control.SearchBox = L.Control.extend({
       }, 700)
     );
 
-    //* On mouse wheel container
-    L.DomEvent.on(container, "mousewheel", function (e: any) {
-      e.stopPropagation();
-    });
-
-    //* On click and double click contaiber
+    L.DomEvent.on(searchInput, "blur", this._onBlur, resultsWrapper);
+    L.DomEvent.on(searchInput, "focus", this._onFocus, resultsWrapper);
+    L.DomEvent.on(container, "mousewheel", this._onMouseWheel, this);
     L.DomEvent.on(container, "click", this._onClick, this);
     L.DomEvent.on(container, "dblclick", this._onClick, this);
+    L.DomEvent.on(container, "mousedown", this._disableDrag, this);
+    L.DomEvent.on(container, "mouseup", this._enableDrag, this);
 
     return container;
   },
 
   onRemove: function (map: any) {
-    const searchDiv = L.DomUtil.get("search-box");
-    L.DomEvent.off(searchDiv, "click", this._onClick, this);
-    L.DomEvent.off(searchDiv, "dblclick", this._onClick, this);
+    const searchBox = L.DomUtil.get("search-box");
+    const searchResults = L.DomUtil.get("search-results");
+    const searchInput = L.DomUtil.get("search-input");
+
+    L.DomEvent.off(searchInput, "blur", this._onBlur, searchResults);
+    L.DomEvent.off(searchBox, "mousewheel", this._onMouseWheel, this);
+    L.DomEvent.off(searchBox, "click", this._onClick, this);
+    L.DomEvent.off(searchBox, "dblclick", this._onClick, this);
+    L.DomEvent.off(searchBox, "mousedown", this._disableDrag, this);
+    L.DomEvent.off(searchBox, "mouseup", this._enableDrag, this);
+  },
+
+  _onFocus: function () {
+    if (this.hasChildNodes()) {
+      this.classList.add("show-results");
+    }
+  },
+
+  _onBlur: function () {
+    this.classList.remove("show-results");
+  },
+
+  _onMouseWheel: function (e: any) {
+    e.stopPropagation();
   },
 
   _onClick: function (e: any) {
     e.stopPropagation();
+  },
+
+  _disableDrag: function () {
+    this._map.dragging.disable();
+  },
+
+  _enableDrag: function () {
+    this._map.dragging.enable();
   },
 
   _createResultElement: function (result: Result) {
