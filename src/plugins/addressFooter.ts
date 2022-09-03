@@ -1,23 +1,40 @@
+/**
+ * With this plugin, an address box would appear at the bottom
+ */
 const { L } = window || {};
 
 L.Control.AddressBox = L.Control.extend({
   onAdd: function (map: any) {
-    const addressDiv = L.DomUtil.create("div");
-    addressDiv.classList.add("MtrMap--address");
-    addressDiv.setAttribute("id", "address-box");
-    L.DomEvent.on(addressDiv, "click", this._onClick, this);
-    L.DomEvent.on(addressDiv, "dblclick", this._onClick, this);
-    return addressDiv;
+    //* Prepare address box
+    const addressBox = L.DomUtil.create("div");
+    addressBox.classList.add("MtrMap--address");
+    addressBox.setAttribute("id", "address-box");
+    L.DomEvent.on(addressBox, "click", this._onClick, this);
+    L.DomEvent.on(addressBox, "dblclick", this._onClick, this);
+    L.DomEvent.on(addressBox, "mousedown", this._disableDrag, this);
+    L.DomEvent.on(addressBox, "mouseup", this._enableDrag, this);
+    return addressBox;
   },
 
   onRemove: function (map: any) {
-    const addressDiv = L.DomUtil.get("address-box");
-    L.DomEvent.off(addressDiv, "click", this._onClick, this);
-    L.DomEvent.off(addressDiv, "dblclick", this._onClick, this);
+    const addressBox = L.DomUtil.get("address-box");
+
+    L.DomEvent.off(addressBox, "click", this._onClick, this);
+    L.DomEvent.off(addressBox, "dblclick", this._onClick, this);
+    L.DomEvent.off(addressBox, "mousedown", this._disableDrag, this);
+    L.DomEvent.off(addressBox, "mouseup", this._enableDrag, this);
   },
 
   _onClick: function (e: any) {
     e.stopPropagation();
+  },
+
+  _disableDrag: function () {
+    this._map.dragging.disable();
+  },
+
+  _enableDrag: function () {
+    this._map.dragging.enable();
   },
 });
 
