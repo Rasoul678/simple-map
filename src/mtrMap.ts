@@ -5,6 +5,7 @@ import {
   InputField,
   ApiStatusEnum,
   SearchByAddressResponse,
+  SearchByLatLngResponse,
 } from "../types";
 import { getAddressByLatLng, getLatLngByAddress } from "./utils";
 import { geocode, footer, customMarker, customIcon } from "./plugins";
@@ -55,7 +56,7 @@ class MtrMap {
 
     //* Include some properties to map instance (we can access them inside map object)
     L.Map.include({
-      getErrorMessage: this.getErrorMessage,
+      getResponseMessage: this.getResponseMessage,
       getAddressBy: this.getAddressBy,
       getLatLngBy: this.getLatLngBy,
       addMarker: this.addMarker.bind(this),
@@ -213,9 +214,8 @@ class MtrMap {
     if (status === "OK") {
       //! Fire callback
       this._options.events.onGetAddress({
-        status,
-        data,
-        error: this.getErrorMessage(status),
+        ...data,
+        responseMessage: this.getResponseMessage(status),
       });
 
       //! Set strigng address
@@ -273,7 +273,7 @@ class MtrMap {
       shahrestan: countyValue,
       bakhsh: suburbValue,
       shahr: cityValue,
-      rosta: urbunValue,
+      rusta: urbunValue,
       address: addressValue,
     } = values;
 
@@ -311,7 +311,7 @@ class MtrMap {
     return input;
   }
 
-  getErrorMessage(status: ApiStatusEnum) {
+  getResponseMessage(status: ApiStatusEnum) {
     const messages: Record<string, string> = {
       OK: "پاسخ به درخواست با موفقیت بوده است",
       UNAUTHORIZED: "توکن درخواستی معتبر نیست",
@@ -341,7 +341,8 @@ class MtrMap {
       key: this._options.tokens.apiKey,
       location: `${marker.lng},${marker.lat}`,
     });
-    return data;
+
+    return data as SearchByLatLngResponse;
   };
 }
 

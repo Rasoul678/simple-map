@@ -29,11 +29,36 @@ type Result = {
   };
 };
 
+type Sub = {
+  code: string;
+  id: number;
+  title: string;
+  type: string;
+};
+
+type Subdivisions = {
+  ostan: Sub;
+  bakhsh: Sub;
+  shahrestan: Sub;
+  shahr: Sub;
+  rusta: Sub;
+};
+
 interface SearchByAddressResponse {
   Consumer: number;
   results: Result[];
   search_type: string;
   status: ApiStatusEnum;
+}
+
+interface SearchByLatLngResponse {
+  address: string;
+  approximate_address: string;
+  local_address: string;
+  geofences: [];
+  status: ApiStatusEnum;
+  subdivision_prefix: string;
+  subdivisions: Subdivisions;
 }
 
 type InputField = HTMLInputElement | string;
@@ -79,7 +104,9 @@ interface MapOptions {
     draggable?: boolean;
   };
   events?: {
-    onGetAddress?: (address: AddressResponse) => void;
+    onGetAddress?: (
+      address: SearchByLatLngResponse & { responseMessage?: string | null }
+    ) => void;
     onMapReady?: (map: any) => void;
   };
   inputs?: Inputs;
