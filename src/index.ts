@@ -55,7 +55,7 @@ const mtrMap = new MTRMap({
     county: countyInput,
     suburb: suburbInput,
     city: cityInput,
-    urbun: urbunInput,
+    village: urbunInput,
     address: addressInput,
   },
   iconUrl: "https://cdn.parsimap.ir/icons/map-marker.png",

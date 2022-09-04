@@ -68,7 +68,7 @@ declare enum InputsEnum {
   county = "county",
   suburb = "suburb",
   city = "city",
-  urbun = "urbun",
+  village = "village",
   address = "address",
 }
 

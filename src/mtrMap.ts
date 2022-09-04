@@ -265,7 +265,7 @@ class MtrMap {
   }
 
   private setInputs(values: any) {
-    const { province, county, suburb, city, urbun, address } =
+    const { province, county, suburb, city, village, address } =
       this._options.inputs;
 
     const {
@@ -282,7 +282,7 @@ class MtrMap {
       [county, countyValue],
       [city, cityValue],
       [suburb, suburbValue],
-      [urbun, urbunValue],
+      [village, urbunValue],
       [address, addressValue],
     ]);
 
