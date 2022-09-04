@@ -64,13 +64,13 @@ L.Control.SearchBox = L.Control.extend({
       }, 700)
     );
 
-    L.DomEvent.on(searchInput, "blur", this._onBlur, resultsWrapper);
     L.DomEvent.on(searchInput, "focus", this._onFocus, resultsWrapper);
     L.DomEvent.on(container, "wheel", this._onMouseWheel, this);
     L.DomEvent.on(container, "click", this._onClick, this);
     L.DomEvent.on(container, "dblclick", this._onClick, this);
     L.DomEvent.on(container, "mousedown", this._disableDrag, this);
     L.DomEvent.on(container, "mouseup", this._enableDrag, this);
+    L.DomEvent.on(document, "click", this._onClickDoc, resultsWrapper);
 
     return container;
   },
@@ -80,37 +80,39 @@ L.Control.SearchBox = L.Control.extend({
     const searchResults = L.DomUtil.get("search-results");
     const searchInput = L.DomUtil.get("search-input");
 
-    L.DomEvent.off(searchInput, "blur", this._onBlur, searchResults);
+    L.DomEvent.off(searchInput, "focus", this._onFocus, searchResults);
     L.DomEvent.off(searchBox, "wheel", this._onMouseWheel, this);
     L.DomEvent.off(searchBox, "click", this._onClick, this);
     L.DomEvent.off(searchBox, "dblclick", this._onClick, this);
     L.DomEvent.off(searchBox, "mousedown", this._disableDrag, this);
     L.DomEvent.off(searchBox, "mouseup", this._enableDrag, this);
+    L.DomEvent.off(document, "click", this._onClickDoc, searchResults);
   },
 
-  _onFocus: function () {
+  _onClickDoc: function (e: MouseEvent) {
+    this.classList.remove("show-results");
+
+  },
+
+  _onFocus: function (e: FocusEvent) {
     if (this.hasChildNodes()) {
       this.classList.add("show-results");
     }
   },
 
-  _onBlur: function () {
-    this.classList.remove("show-results");
-  },
-
-  _onMouseWheel: function (e: any) {
+  _onMouseWheel: function (e: WheelEvent) {
     e.stopPropagation();
   },
 
-  _onClick: function (e: any) {
+  _onClick: function (e: MouseEvent) {
     e.stopPropagation();
   },
 
-  _disableDrag: function () {
+  _disableDrag: function (e: MouseEvent) {
     this._map.dragging.disable();
   },
 
-  _enableDrag: function () {
+  _enableDrag: function (e: MouseEvent) {
     this._map.dragging.enable();
   },
 

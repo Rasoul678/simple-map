@@ -1,15 +1,15 @@
-// import MTRMap from "./mtrMap";
-// import { getLatLngByAddress, getAddressByLatLng } from "./utils";
+import MTRMap from "./mtrMap";
+import { getLatLngByAddress, getAddressByLatLng } from "./utils";
 import "./styles.scss";
-import MMP from "map-package";
+// import MMP from "map-package";
 
-// const MtrMap = function (options: any) {
-//   return new MTRMap(options);
-// };
+const MtrMap = function (options: any) {
+  return new MTRMap(options);
+};
 
-// window.MtrMap = MtrMap;
+window.MtrMap = MtrMap;
 
-// export { getAddressByLatLng, getLatLngByAddress };
+export { getAddressByLatLng, getLatLngByAddress };
 
 const element1 = document.querySelector("#map") as HTMLElement;
 const provinceInput = document.querySelector(
@@ -31,7 +31,7 @@ const addressInput = document.querySelector(
   '[data-js="address"]'
 ) as HTMLInputElement;
 
-const mtrMap = new MMP({
+const mtrMap = new MTRMap({
   element: element1,
   presets: {
     center: {

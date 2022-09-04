@@ -193,6 +193,11 @@ class MtrMap {
     let distance = L.GeometryUtil.distance(this.map, marker, prevMarker);
     let flyDuration = Math.min(Math.max(0.5, +(distance / 2500).toFixed(1)), 3);
 
+    //* If marker is pointed exactly to the same place, prevent fly animation 
+    if (!distance) {
+      flyDuration = 0;
+    }
+
     //! Remove last marker
     if (this._markerObj) {
       this.map.removeLayer(this._markerObj);
