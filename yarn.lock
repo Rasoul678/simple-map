@@ -2157,10 +2157,10 @@ map-obj@^4.0.0:
   resolved "https://registry.yarnpkg.com/map-obj/-/map-obj-4.3.0.tgz#9304f906e93faae70880da102a9f1df0ea8bb05a"
   integrity sha512-hdN1wVrZbb29eBGiGjJbeP8JbKjq1urkHJ/LIP/NY48MZ1QVXUsQBV1G1zvYFHn1XE06cwjBsOI2K3Ulnj1YXQ==
 
-map-package@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/map-package/-/map-package-1.0.2.tgz#e90c213d4c2c18d3927da165f1e1b97cd0489fe9"
-  integrity sha512-HiJ63vy/vstid7kBVgXE5wSa7vNkC/mgsAqrgAY4fGmRCCZyUemAvSbxOPDaCt6W5GV/HoFNAtmalmCBMuAxEg==
+map-package@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/map-package/-/map-package-1.0.4.tgz#35c749dd04adddd80967c3a246de1866b40e205b"
+  integrity sha512-BVFENzQPUPi1rfrLqjcxPAu6p28NKC12Ha6D8ujOR+7bZyHDKspVjwwO7YNbYNRPwg09d8KtkQMOE+P9XrX/+w==
 
 media-typer@0.3.0:
   version "0.3.0"
