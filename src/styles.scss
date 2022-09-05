@@ -58,6 +58,7 @@ body {
     border: 1px solid #cbcbcb;
     transform: translate3d(0, -4rem, 0);
     transition: transform 0.3s linear;
+    overflow: hidden;
 
     &.show-box {
       transform: translate3d(0, 0, 0);
@@ -71,6 +72,32 @@ body {
       border: none;
       outline: none;
       font-size: 1rem;
+      color: #707070;
+    }
+
+    .MtrMap--searchWrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .MtrMap--iconsWrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 1rem;
+      gap: 0.5rem;
+
+      img:first-child {
+        padding-left: 0.5rem;
+        border-left: 1px solid #cbcbcb;
+        display: none;
+        cursor: pointer;
+
+        &.show {
+          display: block;
+        }
+      }
     }
 
     .MtrMap--search-results {
@@ -97,6 +124,7 @@ body {
           font-weight: bold;
           color: #707070;
           margin: 0;
+          padding: 0 0.5rem;
         }
 
         .search-description {

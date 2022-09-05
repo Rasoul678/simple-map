@@ -6,7 +6,7 @@ import {
   ApiStatusEnum,
   SearchByAddressResponse,
   SearchByLatLngResponse,
-} from "../types";
+} from "./types";
 import { getAddressByLatLng, getLatLngByAddress } from "./utils";
 import { geocode, footer, customMarker, customIcon } from "./plugins";
 

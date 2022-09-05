@@ -3,7 +3,7 @@ const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const dotenv = require("dotenv")
+const dotenv = require("dotenv");
 const env = dotenv.config({ path: "./.env" }).parsed;
 
 const envKeys = Object.keys(env).reduce((prev, next) => {
@@ -38,6 +38,13 @@ module.exports = {
       {
         test: /\.(scss|css)$/,
         use: [MiniCssExtractPlugin.loader, "css-loader", "sass-loader"],
+      },
+      {
+        test: /\.(jpe?g|png|gif|svg)$/i,
+        loader: "file-loader",
+        options: {
+          name: "/assets/icons/[name].[ext]",
+        },
       },
     ],
   },

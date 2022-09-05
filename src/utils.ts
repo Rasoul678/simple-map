@@ -1,4 +1,4 @@
-import { AddressSearchParams, LatLngSearchParams } from "../types";
+import { AddressSearchParams, LatLngSearchParams } from "./types";
 
 /**
  * Get reverse address by location longitude and latitude.

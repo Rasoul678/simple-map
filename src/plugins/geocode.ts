@@ -1,16 +1,33 @@
 /**
  * Out of the box, this plugin provides search capabilities for maps
  */
-import { Result, SearchByAddressResponse } from "../../types";
+import { Result, SearchByAddressResponse } from "../types";
 import { debounce } from "../utils";
+import pinIcon from "../assets/icons/pin.svg";
+import cancelIcon from "../assets/icons/cancel.svg";
+import searchIcon from "../assets/icons/search.svg";
 
 const { L } = window || {};
 
 L.Control.SearchBox = L.Control.extend({
   onAdd: function (map: any) {
-    const container = L.DomUtil.create("div");
-    const searchInput = L.DomUtil.create("input");
+    const container: HTMLDivElement = L.DomUtil.create("div");
+    const searchWrapper: HTMLDivElement = L.DomUtil.create("div");
+    const iconsWrapper: HTMLDivElement = L.DomUtil.create("div");
+    const searchInput: HTMLInputElement = L.DomUtil.create("input");
+    const cancelImage: HTMLImageElement = L.DomUtil.create("img");
+    const searchImage: HTMLImageElement = L.DomUtil.create("img");
 
+    searchWrapper.classList.add("MtrMap--searchWrapper");
+    iconsWrapper.classList.add("MtrMap--iconsWrapper");
+
+    cancelImage.src = cancelIcon;
+    searchImage.src = searchIcon;
+
+    iconsWrapper.appendChild(cancelImage);
+    iconsWrapper.appendChild(searchImage);
+
+    cancelImage.setAttribute("id", "cancel-image");
     searchInput.setAttribute("placeholder", "جستجوس آدرس");
     searchInput.setAttribute("id", "search-input");
 
@@ -21,9 +38,11 @@ L.Control.SearchBox = L.Control.extend({
       container.classList.add("show-box");
     });
 
-    container.appendChild(searchInput);
+    searchWrapper.appendChild(searchInput);
+    searchWrapper.appendChild(iconsWrapper);
+    container.appendChild(searchWrapper);
 
-    const resultsWrapper = L.DomUtil.create("div");
+    const resultsWrapper: HTMLDivElement = L.DomUtil.create("div");
     resultsWrapper.classList.add("MtrMap--search-results");
     resultsWrapper.setAttribute("id", "search-results");
 
@@ -35,12 +54,16 @@ L.Control.SearchBox = L.Control.extend({
     L.DomEvent.on(
       searchInput,
       "input",
-      debounce(async (e: any) => {
+      debounce(async (e: InputEvent) => {
         const searchText = (e.target as HTMLInputElement).value;
         if (!searchText) {
           resultsWrapper.innerHTML = "";
           resultsWrapper.classList.remove("show-results");
+          cancelImage.classList.remove("show");
+        } else {
+          cancelImage.classList.add("show");
         }
+
         const data: SearchByAddressResponse = await map.getLatLngBy(searchText);
 
         if (data.status === "OK") {
@@ -71,6 +94,7 @@ L.Control.SearchBox = L.Control.extend({
     L.DomEvent.on(container, "mousedown", this._disableDrag, this);
     L.DomEvent.on(container, "mouseup", this._enableDrag, this);
     L.DomEvent.on(document, "click", this._onClickDoc, resultsWrapper);
+    L.DomEvent.on(cancelImage, "click", this._onClearSearch, searchInput);
 
     return container;
   },
@@ -79,6 +103,7 @@ L.Control.SearchBox = L.Control.extend({
     const searchBox = L.DomUtil.get("search-box");
     const searchResults = L.DomUtil.get("search-results");
     const searchInput = L.DomUtil.get("search-input");
+    const cancelImage = L.DomUtil.get("cancel-image");
 
     L.DomEvent.off(searchInput, "focus", this._onFocus, searchResults);
     L.DomEvent.off(searchBox, "wheel", this._onMouseWheel, this);
@@ -87,11 +112,21 @@ L.Control.SearchBox = L.Control.extend({
     L.DomEvent.off(searchBox, "mousedown", this._disableDrag, this);
     L.DomEvent.off(searchBox, "mouseup", this._enableDrag, this);
     L.DomEvent.off(document, "click", this._onClickDoc, searchResults);
+    L.DomEvent.off(cancelImage, "click", this._onClearSearch, searchInput);
+  },
+
+  _onClearSearch: function (e: MouseEvent) {
+    const searchResults: HTMLDivElement = L.DomUtil.get("search-results");
+    const cancelImage: HTMLImageElement = L.DomUtil.get("cancel-image");
+
+    this.value = "";
+    searchResults.innerHTML = "";
+    searchResults.classList.remove("show-results");
+    cancelImage.classList.remove("show");
   },
 
   _onClickDoc: function (e: MouseEvent) {
     this.classList.remove("show-results");
-
   },
 
   _onFocus: function (e: FocusEvent) {
@@ -122,55 +157,21 @@ L.Control.SearchBox = L.Control.extend({
       geo_location: { title },
     } = result;
 
-    const resItem = L.DomUtil.create("div");
-    const resTitle = L.DomUtil.create("span");
-    const resDescription = L.DomUtil.create("p");
+    const resItem: HTMLDivElement = L.DomUtil.create("div");
+    const pinImage: HTMLImageElement = L.DomUtil.create("img");
+    const resTitle: HTMLSpanElement = L.DomUtil.create("span");
+    const resDescription: HTMLParagraphElement = L.DomUtil.create("p");
 
     resTitle.classList.add("search-title");
     resDescription.classList.add("search-description");
     resItem.classList.add("MtrMap--search-item");
 
-    const pinSvg = `
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="18"
-        height="18"
-        viewBox="0 0 18 18"
-      >
-        <defs>
-          <style>
-            .a {
-              fill: #707070;
-            }
-            .b {
-              fill: none;
-            }
-          </style>
-        </defs>
-        <g transform="translate(-1495.335 -392)">
-          <g transform="translate(1495.335 392)">
-            <g transform="translate(2.707 0.541)">
-              <path
-                class="a"
-                d="M5847.325,3927.6l-.005-.006a6.608,6.608,0,0,0-8.8.006,6.134,6.134,0,0,0-.582,8.043l4.98,6.624,4.975-6.613A6.136,6.136,0,0,0,5847.325,3927.6Zm-.159,7.548-4.239,5.635-4.255-5.646a5.286,5.286,0,0,1,.489-6.926,5.652,5.652,0,0,1,7.521-.006A5.29,5.29,0,0,1,5847.166,3935.153Z"
-                transform="translate(-5836.709 -3925.926)"
-              />
-              <path
-                class="a"
-                d="M5847.87,3932.89a2.231,2.231,0,1,0,.654,1.578A2.238,2.238,0,0,0,5847.87,3932.89Zm-1.578,2.935a1.36,1.36,0,1,1,1.363-1.358A1.361,1.361,0,0,1,5846.292,3935.825Z"
-                transform="translate(-5840.019 -3928.764)"
-              />
-            </g>
-            <rect class="b" width="18" height="18" />
-          </g>
-        </g>
-      </svg>
-    `;
+    pinImage.src = pinIcon;
 
-    resItem.innerHTML = pinSvg;
     resTitle.innerText = title;
     resDescription.innerText = description;
 
+    resItem.appendChild(pinImage);
     resItem.appendChild(resTitle);
     resItem.appendChild(resDescription);
 
