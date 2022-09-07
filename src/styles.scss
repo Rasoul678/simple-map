@@ -88,7 +88,7 @@ body {
       padding: 0 1rem;
       gap: 0.5rem;
 
-      img:first-child {
+      #cancel-icon {
         padding-left: 0.5rem;
         border-left: 1px solid #cbcbcb;
         display: none;
@@ -124,7 +124,6 @@ body {
           font-weight: bold;
           color: #707070;
           margin: 0;
-          padding: 0 0.5rem;
         }
 
         .search-description {

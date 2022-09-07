@@ -3,9 +3,7 @@
  */
 import { Result, SearchByAddressResponse } from "../types";
 import { debounce } from "../utils";
-import pinIcon from "../assets/icons/pin.svg";
-import cancelIcon from "../assets/icons/cancel.svg";
-import searchIcon from "../assets/icons/search.svg";
+import { cancelSvg, searchSvg, pinSvg } from "../constants/index";
 
 const { L } = window || {};
 
@@ -15,19 +13,19 @@ L.Control.SearchBox = L.Control.extend({
     const searchWrapper: HTMLDivElement = L.DomUtil.create("div");
     const iconsWrapper: HTMLDivElement = L.DomUtil.create("div");
     const searchInput: HTMLInputElement = L.DomUtil.create("input");
-    const cancelImage: HTMLImageElement = L.DomUtil.create("img");
-    const searchImage: HTMLImageElement = L.DomUtil.create("img");
+    const cancelIcon: HTMLDivElement = L.DomUtil.create("div");
+    const searchIcon: HTMLDivElement = L.DomUtil.create("div");
 
     searchWrapper.classList.add("MtrMap--searchWrapper");
     iconsWrapper.classList.add("MtrMap--iconsWrapper");
 
-    cancelImage.src = cancelIcon;
-    searchImage.src = searchIcon;
+    cancelIcon.innerHTML = cancelSvg;
+    searchIcon.innerHTML = searchSvg;
 
-    iconsWrapper.appendChild(cancelImage);
-    iconsWrapper.appendChild(searchImage);
+    iconsWrapper.appendChild(cancelIcon);
+    iconsWrapper.appendChild(searchIcon);
 
-    cancelImage.setAttribute("id", "cancel-image");
+    cancelIcon.setAttribute("id", "cancel-icon");
     searchInput.setAttribute("placeholder", "جستجوس آدرس");
     searchInput.setAttribute("id", "search-input");
 
@@ -59,9 +57,9 @@ L.Control.SearchBox = L.Control.extend({
         if (!searchText) {
           resultsWrapper.innerHTML = "";
           resultsWrapper.classList.remove("show-results");
-          cancelImage.classList.remove("show");
+          cancelIcon.classList.remove("show");
         } else {
-          cancelImage.classList.add("show");
+          cancelIcon.classList.add("show");
         }
 
         const data: SearchByAddressResponse = await map.getLatLngBy(searchText);
@@ -94,7 +92,7 @@ L.Control.SearchBox = L.Control.extend({
     L.DomEvent.on(container, "mousedown", this._disableDrag, this);
     L.DomEvent.on(container, "mouseup", this._enableDrag, this);
     L.DomEvent.on(document, "click", this._onClickDoc, resultsWrapper);
-    L.DomEvent.on(cancelImage, "click", this._onClearSearch, searchInput);
+    L.DomEvent.on(cancelIcon, "click", this._onClearSearch, searchInput);
 
     return container;
   },
@@ -117,12 +115,12 @@ L.Control.SearchBox = L.Control.extend({
 
   _onClearSearch: function (e: MouseEvent) {
     const searchResults: HTMLDivElement = L.DomUtil.get("search-results");
-    const cancelImage: HTMLImageElement = L.DomUtil.get("cancel-image");
+    const cancelIcon: HTMLImageElement = L.DomUtil.get("cancel-icon");
 
     this.value = "";
     searchResults.innerHTML = "";
     searchResults.classList.remove("show-results");
-    cancelImage.classList.remove("show");
+    cancelIcon.classList.remove("show");
   },
 
   _onClickDoc: function (e: MouseEvent) {
@@ -158,7 +156,7 @@ L.Control.SearchBox = L.Control.extend({
     } = result;
 
     const resItem: HTMLDivElement = L.DomUtil.create("div");
-    const pinImage: HTMLImageElement = L.DomUtil.create("img");
+    const pinIcon: HTMLSpanElement = L.DomUtil.create("span");
     const resTitle: HTMLSpanElement = L.DomUtil.create("span");
     const resDescription: HTMLParagraphElement = L.DomUtil.create("p");
 
@@ -166,12 +164,11 @@ L.Control.SearchBox = L.Control.extend({
     resDescription.classList.add("search-description");
     resItem.classList.add("MtrMap--search-item");
 
-    pinImage.src = pinIcon;
-
+    pinIcon.innerHTML = pinSvg;
     resTitle.innerText = title;
     resDescription.innerText = description;
 
-    resItem.appendChild(pinImage);
+    resItem.appendChild(pinIcon);
     resItem.appendChild(resTitle);
     resItem.appendChild(resDescription);
 
