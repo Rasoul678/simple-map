@@ -108,6 +108,7 @@ interface MapOptions {
       address: SearchByLatLngResponse & { responseMessage?: string | null }
     ) => void;
     onMapReady?: (map: any) => void;
+    onGeoResult?: (result: SearchByAddressResponse) => void;
   };
   inputs?: Inputs;
   iconUrl?: string;

@@ -50,6 +50,9 @@ const mtrMap = new MTRMap({
   events: {
     onGetAddress: showAddress,
     onMapReady: onReady,
+    onGeoResult: (result) => {
+      console.log(result)
+    },
   },
   inputs: {
     province: provinceInput,

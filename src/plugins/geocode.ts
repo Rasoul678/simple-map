@@ -63,8 +63,12 @@ L.Control.SearchBox = L.Control.extend({
         }
 
         const data: SearchByAddressResponse = await map.getLatLngBy(searchText);
+        
+        //* Expose results on success
+        map.onGeoResult?.(data);
 
         if (data.status === "OK") {
+
           if (data.results.length) {
             resultsWrapper.classList.add("show-results");
           }

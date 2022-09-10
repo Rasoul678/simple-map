@@ -60,6 +60,7 @@ class MtrMap {
       getAddressBy: this.getAddressBy,
       getLatLngBy: this.getLatLngBy,
       addMarker: this.addMarker.bind(this),
+      onGeoResult: this._options.events.onGeoResult,
     });
 
     //! Add the tiles
@@ -193,7 +194,7 @@ class MtrMap {
     let distance = L.GeometryUtil.distance(this.map, marker, prevMarker);
     let flyDuration = Math.min(Math.max(0.5, +(distance / 2500).toFixed(1)), 3);
 
-    //* If marker is pointed exactly to the same place, prevent fly animation 
+    //* If marker is pointed exactly to the same place, prevent fly animation
     if (!distance) {
       flyDuration = 0;
     }
