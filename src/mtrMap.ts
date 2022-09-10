@@ -147,7 +147,7 @@ class MtrMap {
     //* Fly effect on map
     this.map.flyTo(
       { lon: this.marker.lng, lat: this.marker.lat },
-      this.map.getZoom(),
+      this._options.presets.zoom || this.map.getZoom(),
       {
         animate: this._options.presets.flyMode ?? true,
         duration: flyDuration,
