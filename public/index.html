@@ -35,67 +35,79 @@
     <title>Mootanroo | Map</title>
   </head>
   <body>
-    <div style="height: 330px;" class="w-50 m-auto">
+    <div style="height: 330px" class="w-50 m-auto">
       <div id="map"></div>
     </div>
 
     <div style="display: flex; margin: 1rem; gap: 2rem">
       <h2>آدرس:</h2>
       <div class="row">
-        <div class="col-lg-6 my-2">
-          <input
+        <div class="col-lg-6 my-2" style="display: flex; justify-content: space-between;">
+          <!-- <input
             type="text"
             class="form-control"
             placeholder="استان"
             aria-describedby="استان"
             data-js="province"
             id="provinceInput"
-          />
+          /> -->
+          <label for="provinceInput">استان:</label>
+          <select id="provinceInput" class="form-select w-75" data-js="province" aria-label="province-select">
+            <option selected>انتخاب کنید</option>
+            <option value="تهران">تهران</option>
+            <option value="مازندران">مازندران</option>
+            <option value="فارس">فارس</option>
+          </select>
         </div>
-        <div class="col-lg-6 my-2">
+        <div class="col-lg-6 my-2" style="display: flex; justify-content: space-between;">
+          <label for="countyInput">شهرستان:</label>
           <input
             type="text"
-            class="form-control"
+            class="form-control w-75"
             placeholder="شهرستان"
             aria-describedby="شهرستان"
             data-js="county"
             id="countyInput"
           />
         </div>
-        <div class="col-lg-6 my-2">
+        <div class="col-lg-6 my-2" style="display: flex; justify-content: space-between;">
+          <label for="suburbInput">بخش:</label>
           <input
             type="text"
-            class="form-control"
+            class="form-control w-75"
             placeholder="بخش"
             aria-describedby="بخش"
             data-js="suburb"
             id="suburbInput"
           />
         </div>
-        <div class="col-lg-6 my-2">
+        <div class="col-lg-6 my-2" style="display: flex; justify-content: space-between;">
+          <label for="cityInput">شهر:</label>
           <input
             type="text"
-            class="form-control"
+            class="form-control w-75"
             placeholder="شهر"
             aria-describedby="شهر"
             data-js="city"
             id="cityInput"
           />
         </div>
-        <div class="col-lg-6 my-2">
+        <div class="col-lg-6 my-2" style="display: flex; justify-content: space-between;">
+          <label for="cityInput">روستا:</label>
           <input
             type="text"
-            class="form-control"
+            class="form-control w-75"
             placeholder="روستا"
             aria-describedby="روستا"
-            data-js="urbun"
-            id="urbunInput"
+            data-js="rural"
+            id="ruralInput"
           />
         </div>
-        <div class="col-lg-6 my-2">
+        <div class="col-lg-6 my-2" style="display: flex; justify-content: space-between;">
+          <label for="addressInput">آدرس:</label>
           <input
             type="text"
-            class="form-control"
+            class="form-control w-75"
             placeholder="آدرس"
             aria-describedby="آدرس"
             data-js="address"

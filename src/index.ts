@@ -1,15 +1,15 @@
-import MTRMap from "./mtrMap";
-import { getLatLngByAddress, getAddressByLatLng } from "./utils";
+// import MTRMap from "./mtrMap";
+// import { getLatLngByAddress, getAddressByLatLng } from "./utils";
 import "./styles.scss";
-// import MMP from "map-package";
+import MMP from "map-package";
 
-const MtrMap = function (options: any) {
-  return new MTRMap(options);
-};
+// const MtrMap = function (options: any) {
+//   return new MTRMap(options);
+// };
 
-window.MtrMap = MtrMap;
+// window.MtrMap = MtrMap;
 
-export { getAddressByLatLng, getLatLngByAddress };
+// export { getAddressByLatLng, getLatLngByAddress };
 
 const element1 = document.querySelector("#map") as HTMLElement;
 const provinceInput = document.querySelector(
@@ -24,14 +24,14 @@ const cityInput = document.querySelector(
 const suburbInput = document.querySelector(
   '[data-js="suburb"]'
 ) as HTMLInputElement;
-const urbunInput = document.querySelector(
-  '[data-js="urbun"]'
+const ruralInput = document.querySelector(
+  '[data-js="rural"]'
 ) as HTMLInputElement;
 const addressInput = document.querySelector(
   '[data-js="address"]'
 ) as HTMLInputElement;
 
-const mtrMap = new MTRMap({
+const mtrMap = new MMP({
   element: element1,
   presets: {
     center: {
@@ -50,7 +50,7 @@ const mtrMap = new MTRMap({
   events: {
     onGetAddress: showAddress,
     onMapReady: onReady,
-    onGeoResult: (result) => {
+    onGeoResult: (result: any) => {
       console.log(result)
     },
   },
@@ -59,7 +59,7 @@ const mtrMap = new MTRMap({
     county: countyInput,
     suburb: suburbInput,
     city: cityInput,
-    village: urbunInput,
+    village: ruralInput,
     address: addressInput,
   },
   iconUrl: "https://cdn.parsimap.ir/icons/map-marker.png",
