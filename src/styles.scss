@@ -11,6 +11,22 @@ body {
   box-sizing: border-box;
 }
 
+.map__container {
+  height: 330px;
+}
+
+@media only screen and (max-width: 1200px) {
+  .map__container {
+    width: 70% !important;
+  }
+}
+
+@media only screen and (max-width: 900px) {
+  .map__container {
+    width: 80% !important;
+  }
+}
+
 #map {
   /* configure the size of the map */
   width: 100%;
@@ -56,7 +72,7 @@ body {
     border-radius: 25px;
     background-color: #fff;
     border: 1px solid #cbcbcb;
-    transform: translate3d(0, -4rem, 0);
+    transform: translate3d(0, -3rem, 0);
     transition: transform 0.3s linear;
     overflow: hidden;
 
@@ -142,6 +158,11 @@ body {
   .leaflet-top.leaflet-right {
     width: calc(100%);
     z-index: 1100;
-    padding: 27px 55px;
+    padding: 20px 55px;
+  }
+
+  .input__wrapper {
+    display: flex;
+    justify-content: space-between;
   }
 }

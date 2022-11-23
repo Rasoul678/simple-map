@@ -32,17 +32,17 @@
       integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
       crossorigin="anonymous"
     />
-    <title>Mootanroo | Map</title>
+    <title>Simple | Map</title>
   </head>
   <body>
-    <div style="height: 330px" class="w-50 m-auto">
+    <div class="w-50 m-auto map__container">
       <div id="map"></div>
     </div>
 
     <div style="display: flex; margin: 1rem; gap: 2rem">
       <h2>آدرس:</h2>
       <div class="row">
-        <div class="col-lg-6 my-2" style="display: flex; justify-content: space-between;">
+        <div class="col-lg-6 my-2 input__wrapper">
           <!-- <input
             type="text"
             class="form-control"
@@ -52,14 +52,19 @@
             id="provinceInput"
           /> -->
           <label for="provinceInput">استان:</label>
-          <select id="provinceInput" class="form-select w-75" data-js="province" aria-label="province-select">
+          <select
+            id="provinceInput"
+            class="form-select w-75"
+            data-js="province"
+            aria-label="province-select"
+          >
             <option selected>انتخاب کنید</option>
             <option value="تهران">تهران</option>
             <option value="مازندران">مازندران</option>
             <option value="فارس">فارس</option>
           </select>
         </div>
-        <div class="col-lg-6 my-2" style="display: flex; justify-content: space-between;">
+        <div class="col-lg-6 my-2 input__wrapper">
           <label for="countyInput">شهرستان:</label>
           <input
             type="text"
@@ -70,7 +75,7 @@
             id="countyInput"
           />
         </div>
-        <div class="col-lg-6 my-2" style="display: flex; justify-content: space-between;">
+        <div class="col-lg-6 my-2 input__wrapper">
           <label for="suburbInput">بخش:</label>
           <input
             type="text"
@@ -81,7 +86,7 @@
             id="suburbInput"
           />
         </div>
-        <div class="col-lg-6 my-2" style="display: flex; justify-content: space-between;">
+        <div class="col-lg-6 my-2 input__wrapper">
           <label for="cityInput">شهر:</label>
           <input
             type="text"
@@ -92,7 +97,7 @@
             id="cityInput"
           />
         </div>
-        <div class="col-lg-6 my-2" style="display: flex; justify-content: space-between;">
+        <div class="col-lg-6 my-2 input__wrapper">
           <label for="cityInput">روستا:</label>
           <input
             type="text"
@@ -103,7 +108,7 @@
             id="ruralInput"
           />
         </div>
-        <div class="col-lg-6 my-2" style="display: flex; justify-content: space-between;">
+        <div class="col-lg-6 my-2 input__wrapper">
           <label for="addressInput">آدرس:</label>
           <input
             type="text"
